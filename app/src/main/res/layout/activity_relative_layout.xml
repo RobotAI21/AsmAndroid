@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="Who are you Btec of FPT?"
+        android:textStyle="bold"
+        android:id="@+id/tvAuthor"
+        android:layout_centerHorizontal="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:text="I am Btec"
+        android:id="@+id/tvBtec"
+        android:textStyle="bold"
+        android:layout_below="@+id/tvAuthor"
+        android:layout_centerInParent="true"
+        />
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="150dp"
+        android:src="@drawable/profile_image"
+        android:contentDescription="Logo"
+        android:id="@+id/ivLogo"
+        android:layout_below="@id/tvBtec"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign in"
+        android:textSize="20sp"
+        android:textStyle="italic"
+        android:layout_centerInParent="true"
+        android:id="@+id/tvSignIn"
+        android:layout_below="@id/ivLogo"
+        />
+
+</RelativeLayout>

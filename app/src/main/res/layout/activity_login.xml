@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Good Nice By You"
+        android:textSize="20sp"
+        android:textColor="#543DE0"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal" />
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:src="@drawable/logo_btec"
+        android:layout_gravity="center_horizontal"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#EB6E32"
+        android:autofillHints="false"
+        android:hint="Enter Username"
+        android:paddingLeft="10dp"
+        android:id="@+id/edtUsername"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:autofillHints="false"
+        android:inputType="textPassword"
+        android:background="#EB6E32"
+        android:layout_marginTop="10dp"
+        android:hint="Enter Password"
+        android:paddingLeft="10dp"
+        android:id="@+id/edtPassword"/>
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remenber Me"
+        android:textStyle="bold|italic"
+        android:layout_gravity="center_horizontal"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Login"
+            android:textSize="20sp"
+            android:id="@+id/btnLogin"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:textSize="20sp"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Don't have account"
+        android:layout_gravity="center_horizontal"
+        android:textSize="16sp"
+        android:id="@+id/tvRegister"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password"
+        android:layout_gravity="center_horizontal"
+        android:textSize="16sp"
+        android:textStyle="bold|italic" />
+</LinearLayout>

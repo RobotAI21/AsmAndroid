@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sing Up"
+        android:textSize="25sp"
+        android:textColor="#F1082A"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"/>
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="150dp"
+        android:src="@drawable/logo_btec"
+        android:layout_gravity="center_horizontal"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#EB6E32"
+        android:autofillHints="false"
+        android:hint="Enter Username"
+        android:paddingLeft="10dp"
+        android:id="@+id/edtUsername"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:autofillHints="false"
+        android:inputType="textPassword"
+        android:background="#EB6E32"
+        android:layout_marginTop="10dp"
+        android:hint="Enter Password"
+        android:paddingLeft="10dp"
+        android:id="@+id/edtPassword"/>
+     <EditText
+         android:layout_width="match_parent"
+         android:layout_height="55dp"
+         android:autofillHints="false"
+         android:inputType="textEmailAddress"
+         android:background="#EB6E32"
+         android:layout_marginTop="10dp"
+         android:hint="Enter Email"
+         android:paddingLeft="10dp"
+         android:id="@+id/edtEmail"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:autofillHints="false"
+        android:inputType="phone"
+        android:background="#EB6E32"
+        android:layout_marginTop="10dp"
+        android:hint="Enter Phone"
+        android:paddingLeft="10dp"
+        android:id="@+id/edtPhone"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Register"
+            android:textSize="20sp"
+            android:id="@+id/btnRegister"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Already have account?"
+        android:layout_gravity="center_horizontal"
+        android:textSize="16sp"
+        android:textStyle="bold|italic"
+        android:id="@+id/tvLogin"/>
+
+</LinearLayout>

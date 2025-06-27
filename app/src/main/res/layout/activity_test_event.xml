@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <EditText
+        android:id="@+id/edtData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="False"
+        android:hint="Enter"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/btnClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#F89D00"
+        android:text="Click Button"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/btnClear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#F89D00"
+        android:text="Clear"
+        android:textColor="@color/white" />
+
+    <CheckBox
+        android:id="@+id/cbBlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UnBlock/Block"
+        android:textColor="#F89D00"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Where are you from?"
+        android:textSize="18sp"
+        android:textStyle="italic" />
+
+    <RadioGroup
+        android:id="@+id/radAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radSL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Son La"
+            android:textSize="18dp"/>
+
+        <RadioButton
+            android:id="@+id/radHN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="Ha Noi"
+            android:textSize="18sp"/>
+
+        <RadioButton
+            android:id="@+id/radHG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="Ha Giang"
+            android:textSize="18sp"/>
+    </RadioGroup>
+
+
+</LinearLayout>
