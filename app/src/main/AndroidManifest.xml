@@ -26,7 +26,7 @@
         <activity android:name=".SingUpActivity"/>
         <activity android:name=".LoginActivity"/>
         <activity
-            android:name=".MenuActivity"
+            android:name=".MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
