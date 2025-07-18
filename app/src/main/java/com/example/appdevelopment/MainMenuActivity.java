@@ -1,6 +1,7 @@
 package com.example.appdevelopment;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -36,6 +38,11 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         setupViewPager();
+
+        Menu menu = navigationView.getMenu();
+        MenuItem itemLogout = menu.findItem(R.id.menu_logout);
+        //xu ly logout
+
 
         //xu ly click
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -89,6 +96,16 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+        if (item.getItemId() == R.id.menu_home) {
+            viewPager2.setCurrentItem(0);
+        } else if (item.getItemId() == R.id.menu_expenses) {
+            viewPager2.setCurrentItem(1);
+        } else if (item.getItemId() == R.id.menu_budget)  {
+            viewPager2.setCurrentItem(2);
+        } else if (item.getItemId() == R.id.menu_setting) {
+            viewPager2.setCurrentItem(3);
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 }

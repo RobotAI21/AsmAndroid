@@ -24,9 +24,9 @@
         <activity android:name=".DemoComponentActivity"/>
         <activity android:name=".SharedReferencesActivity"/>
         <activity android:name=".SingUpActivity"/>
-        <activity android:name=".LoginActivity"/>
+        <activity android:name=".MainMenuActivity"/>
         <activity
-            android:name=".MainMenuActivity"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

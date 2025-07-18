@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                 assert infoAccount != null;
                 if(infoAccount.getUsername() != null && infoAccount.getId()>0){
                     //login successfully
-                    Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("ID_ACCOUNT", infoAccount.getId());
                     bundle.putString("USERNAME_ACCOUNT", infoAccount.getUsername());
