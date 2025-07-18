@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.appdevelopment.adapters.ViewPageAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
@@ -34,7 +35,56 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
                 drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+        setupViewPager();
 
+        //xu ly click
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.menu_home) {
+                viewPager2.setCurrentItem(0);
+            } else if (item.getItemId() == R.id.menu_expenses) {
+                viewPager2.setCurrentItem(1);
+            } else if (item.getItemId() == R.id.menu_budget) {
+                viewPager2.setCurrentItem(2);
+            } else if (item.getItemId() == R.id.menu_setting) {
+                viewPager2.setCurrentItem(3);
+            } else {
+                viewPager2.setCurrentItem(0);
+            }
+            return true;
+        });
+    }
+
+    private void setupViewPager() {
+        ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager(), getLifecycle());
+        viewPager2.setAdapter(adapter);
+        //xu ly vuot man hinh
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position == 0) {
+                    bottomNavigationView.getMenu().findItem(R.id.menu_home).setChecked(true);
+                } else if (position == 1) {
+                    bottomNavigationView.getMenu().findItem(R.id.menu_expenses).setChecked(true);
+                } else if (position ==2) {
+                    bottomNavigationView.getMenu().findItem(R.id.menu_budget).setChecked(true);
+                } else if (position==3) {
+                    bottomNavigationView.getMenu().findItem(R.id.menu_setting).setChecked(true);
+                } else {
+                    bottomNavigationView.getMenu().findItem(R.id.menu_home).setChecked(true);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
+        });
     }
 
     @Override
