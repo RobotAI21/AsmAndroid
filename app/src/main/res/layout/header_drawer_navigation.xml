@@ -11,6 +11,13 @@
         android:layout_height="120dp"
         android:src="@drawable/logo_btec"
         android:contentDescription="Logo Btec"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello "
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:id="@+id/tvName"/>
 
 
 </LinearLayout>

@@ -22,6 +22,10 @@ public class MenuActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.logout);
         intent = getIntent();
         bundle = intent.getExtras();
+        if(bundle == null){
+            String username = bundle.getString("USERNAME_ACCOUNT", "");
+
+        }
 
         //lay du lieu tu login truyen sang
         if (bundle != null){

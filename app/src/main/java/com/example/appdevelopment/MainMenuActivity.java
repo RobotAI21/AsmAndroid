@@ -1,8 +1,11 @@
 package com.example.appdevelopment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +26,10 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
     DrawerLayout drawerLayout;
     Toolbar toolbar;
     NavigationView navigationView;
+
+    Intent intent;
+    Bundle bundle;
+    TextView tvUsername;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +39,14 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         drawerLayout = findViewById(R.id.drawer_layout);
         toolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.nav_view);
+//        tvUsername = findViewById(R.id.tvName);
+        intent = getIntent();
+        bundle = intent.getExtras();
+        if (bundle !=null){
+            String username = bundle.getString("USERNAME_ACCOUNT", "");
+            tvUsername.setText(username);
+        }
+
         //xu ly draw menu
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_Drawer, R.string.close_Drawe);
                 drawerLayout.addDrawerListener(toggle);
@@ -42,7 +57,22 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         Menu menu = navigationView.getMenu();
         MenuItem itemLogout = menu.findItem(R.id.menu_logout);
         //xu ly logout
-
+        itemLogout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem item) {
+                    //remove data in intent
+                    if(bundle !=null){
+                        intent.removeExtra("USERNAME_ACCOUNT");
+                        intent.removeExtra("ID_ACCOUNT");
+                        intent.removeExtra("EMAIL_ACCOUNT");
+                        intent.removeExtra("ROLE_ACCOUNT");
+                    }
+                    Intent login = new Intent(MainMenuActivity.this, LoginActivity.class);
+                    startActivity(login);
+                    finish();
+                return false;
+            }
+        });
 
         //xu ly click
         bottomNavigationView.setOnItemSelectedListener(item -> {
