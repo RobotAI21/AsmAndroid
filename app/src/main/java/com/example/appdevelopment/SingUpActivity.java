@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,9 +31,24 @@ public class SingUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singup);
 
+        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+        Animation zoomIn = AnimationUtils.loadAnimation(this, R.anim.zoom_in);
+
+        findViewById(R.id.btnRegister).startAnimation(fadeIn);
+        findViewById(R.id.edtUsername).startAnimation(slideUp);
+        findViewById(R.id.edtPassword).startAnimation(slideUp);
+        findViewById(R.id.edtEmail).startAnimation(slideUp);
+        findViewById(R.id.edtPhone).startAnimation(slideUp);
+        findViewById(R.id.tvLogin).startAnimation(zoomIn);
+
         repository = new UserRepository(SingUpActivity.this);
         btnRegister = findViewById(R.id.btnRegister);
         edtUsername = findViewById(R.id.edtUsername);
+        if (edtUsername.getText().toString().isEmpty()) {
+            Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+            edtUsername.startAnimation(shake);
+        }
         edtPassword = findViewById(R.id.edtPassword);
         edtEmail = findViewById(R.id.edtEmail);
         edtPhone = findViewById(R.id.edtPhone);

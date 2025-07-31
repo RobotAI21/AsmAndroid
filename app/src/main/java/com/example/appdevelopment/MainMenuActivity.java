@@ -39,16 +39,16 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         drawerLayout = findViewById(R.id.drawer_layout);
         toolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.nav_view);
-//        tvUsername = findViewById(R.id.tvName);
+         //tvUsername = findViewById(R.id.tvName);
         intent = getIntent();
         bundle = intent.getExtras();
         if (bundle !=null){
             String username = bundle.getString("USERNAME_ACCOUNT", "");
-            tvUsername.setText(username);
+            //tvUsername.setText(username);
         }
 
         //xu ly draw menu
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_Drawer, R.string.close_Drawe);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_Drawer, R.string.close_Drawer);
                 drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);

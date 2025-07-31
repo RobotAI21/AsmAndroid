@@ -25,6 +25,10 @@
         <activity android:name=".SharedReferencesActivity"/>
         <activity android:name=".SingUpActivity"/>
         <activity android:name=".MainMenuActivity"/>
+        <activity android:name=".budgets.CreateBudgetActivity"/>
+        <activity android:name=".budgets.CreateExpenseActivity"/>
+        <activity android:name=".EditBudgetActivity"/>
+        <activity android:name=".EditExpenseActivity"/>
         <activity
             android:name=".LoginActivity"
             android:exported="true">

@@ -1,78 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="15dp">
+    android:fillViewport="true">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Good Nice By You"
-        android:textSize="20sp"
-        android:textColor="#543DE0"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal" />
-    <ImageView
-        android:layout_width="200dp"
-        android:layout_height="150dp"
-        android:src="@drawable/logo_btec"
-        android:layout_gravity="center_horizontal"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="#EB6E32"
-        android:autofillHints="false"
-        android:hint="Enter Username"
-        android:paddingLeft="10dp"
-        android:id="@+id/edtUsername"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:autofillHints="false"
-        android:inputType="textPassword"
-        android:background="#EB6E32"
-        android:layout_marginTop="10dp"
-        android:hint="Enter Password"
-        android:paddingLeft="10dp"
-        android:id="@+id/edtPassword"/>
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Remenber Me"
-        android:textStyle="bold|italic"
-        android:layout_gravity="center_horizontal"/>
     <LinearLayout
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2">
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
+        android:background="#C8CED7">
+
+        <TextView
             android:text="Login"
-            android:textSize="20sp"
-            android:id="@+id/btnLogin"/>
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#3E4A89"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/logo_btec"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/circle_background"
+            android:scaleType="centerInside" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_bg"
+            android:layout_marginBottom="12dp"
+            android:paddingStart="8dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/account"
+                android:contentDescription="User Icon"
+                android:layout_marginEnd="8dp"/>
+
+            <EditText
+                android:id="@+id/edtUsername"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Username or email address"
+                android:background="@android:color/transparent"
+                android:textColor="#000000"
+                android:textColorHint="#888888"
+                android:inputType="textEmailAddress"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal"
+            android:background="@drawable/edittext_bg"
+            android:layout_marginBottom="20dp"
+            android:paddingStart="8dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/pass"
+                android:contentDescription="Password Icon"
+                android:layout_marginEnd="8dp"/>
+
+            <EditText
+                android:id="@+id/edtPassword"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Password"
+                android:background="@android:color/transparent"
+                android:textColor="#000000"
+                android:textColorHint="#888888"
+                android:inputType="textPassword"/>
+        </LinearLayout>
+
         <Button
-            android:layout_width="0dp"
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Log In"
+            android:background="@drawable/button_bg"
+            android:textColor="#F40303"
+            android:textStyle="bold"
+            android:elevation="4dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:id="@+id/tvRegister"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Cancel"
-            android:textSize="20sp"/>
+            android:text="Don't have account"
+            android:layout_marginBottom="10dp"/>
+
+        <TextView
+            android:text="Login with"
+            android:textColor="#888888"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/x" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/gg" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:src="@drawable/fb" />
+        </LinearLayout>
     </LinearLayout>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Don't have account"
-        android:layout_gravity="center_horizontal"
-        android:textSize="16sp"
-        android:id="@+id/tvRegister"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Forgot Password"
-        android:layout_gravity="center_horizontal"
-        android:textSize="16sp"
-        android:textStyle="bold|italic" />
-</LinearLayout>
+</ScrollView>

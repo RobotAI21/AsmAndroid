@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF3E0">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create New Budget"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#E65100"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="25dp" />
+
+        <EditText
+            android:id="@+id/edtBudgetName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter budget name"
+            android:inputType="text"
+            android:backgroundTint="#FF9800"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:layout_marginBottom="15dp"
+            />
+
+        <EditText
+            android:id="@+id/edtBudgetMoney"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter amount"
+            android:inputType="numberDecimal"
+            android:backgroundTint="#FF9800"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:layout_marginBottom="15dp"
+             />
+
+        <EditText
+            android:id="@+id/edtBudgetDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter description"
+            android:inputType="textMultiLine"
+            android:backgroundTint="#FF9800"
+            android:padding="12dp"
+            android:textColor="#000000"
+            android:layout_marginBottom="25dp"
+             />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#FB8C00"
+            android:layout_marginBottom="10dp"
+            android:padding="12dp" />
+
+        <Button
+            android:id="@+id/btnBackBudget"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#FF7043"
+            android:padding="12dp" />
+
+    </LinearLayout>
+</ScrollView>

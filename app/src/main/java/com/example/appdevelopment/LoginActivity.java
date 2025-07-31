@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,10 +33,17 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         repository = new UserRepository(LoginActivity.this);
 
+        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+
         tvRegister = findViewById(R.id.tvRegister);
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
+
+        findViewById(R.id.tvRegister).startAnimation(fadeIn);
+        findViewById(R.id.edtUsername).startAnimation(slideUp);
+        findViewById(R.id.edtPassword).startAnimation(slideUp);
         checkLoginWithDb();//xu ly dang nhap
 
         tvRegister.setOnClickListener(new View.OnClickListener() {

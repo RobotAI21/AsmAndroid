@@ -3,29 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BudgetFragment"
-    android:padding="15dp"
-    android:background="#EDECEC">
+    tools:context=".ExpenseFragment"
+    android:padding="10dp">
 
     <!-- TODO: Update blank fragment layout -->
     <Button
-        android:id="@+id/btnCreateBudget"
+        android:id="@+id/btnCreateExpense"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Create Budget"
+        android:text="Create Expense"
         android:textSize="18sp"
         android:textColor="#FFFFFF"
         android:background="@drawable/btn_orange_rounded"
-        android:layout_marginBottom="10dp"
         android:elevation="3dp" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvExpense"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/btnCreateBudget"
+        android:layout_below="@id/btnCreateExpense"
         android:layout_marginTop="10dp"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"
-        android:layout_marginBottom="?actionBarSize"
-        android:id="@+id/rvBudget"/>
+        android:paddingBottom="16dp"/>
 </RelativeLayout>
