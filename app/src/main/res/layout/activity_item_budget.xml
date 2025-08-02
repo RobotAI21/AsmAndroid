@@ -4,14 +4,10 @@
     android:padding="16dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:elevation="4dp"
-    android:layout_margin="10dp"
-    android:backgroundTint="#F9F9F9"
+    android:layout_margin="12dp"
+    android:elevation="6dp"
     android:clipToPadding="false"
-    android:clipChildren="false"
-    android:layout_gravity="center"
-    android:layout_marginBottom="16dp">
+    android:clipChildren="false">
 
     <TextView
         android:id="@+id/tvBudgetName"
@@ -20,26 +16,27 @@
         android:text="Budget Name"
         android:textStyle="bold"
         android:textSize="18sp"
-        android:textColor="#333333"
-        android:layout_marginBottom="4dp"/>
+        android:textColor="#084D4D"
+        android:layout_marginBottom="6dp" />
 
     <TextView
         android:id="@+id/tvBudgetMoney"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Amount"
-        android:textColor="#4CAF50"
+        android:textColor="#FB8C00"
+        android:textStyle="bold"
         android:textSize="16sp"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="6dp" />
 
     <TextView
         android:id="@+id/tvBudgetDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Description"
-        android:textColor="#666666"
+        android:textColor="#444444"
         android:textSize="14sp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="12dp" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -53,15 +50,15 @@
             android:layout_height="wrap_content"
             android:text="Edit"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#1976D2"
+            android:background="@drawable/btn_edit_selector"
             android:layout_marginEnd="8dp"/>
 
         <Button
             android:id="@+id/btnDeleteBudget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete"
+            android:text="🗑Delete"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#D32F2F"/>
+            android:background="@drawable/btn_delete_selector"/>
     </LinearLayout>
 </LinearLayout>
