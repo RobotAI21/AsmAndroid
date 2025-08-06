@@ -9,7 +9,7 @@ public class BudgetModel {
     private String createdAt;
     private String updatedAt;
 
-    public BudgetModel(int id, String nameBudget, int moneyBudget, String description, int statusBudget, String createdAt) {
+    public BudgetModel(int id, String nameBudget, int moneyBudget, String description, int statusBudget, String createdAt, String updatedAt ) {
         this.id = id;
         this.nameBudget = nameBudget;
         this.moneyBudget = moneyBudget;

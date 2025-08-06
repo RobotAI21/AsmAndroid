@@ -19,22 +19,26 @@ public class CreateBudgetActivity extends AppCompatActivity {
     EditText edtNameBudget, edtMoneyBudget, edtDescription;
     Button btnSave, btnBack;
     BudgetRepository repository;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_budget);
+
         edtNameBudget = findViewById(R.id.edtBudgetName);
         edtMoneyBudget = findViewById(R.id.edtBudgetMoney);
         edtDescription = findViewById(R.id.edtBudgetDescription);
         btnSave = findViewById(R.id.btnSave);
         btnBack = findViewById(R.id.btnBackBudget);
+
         repository = new BudgetRepository(CreateBudgetActivity.this);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CreateBudgetActivity.this, MainMenuActivity.class);
-                startActivity(intent);
+                // SỬA 1: Tối ưu hóa. Chỉ cần gọi finish() để đóng màn hình hiện tại
+                // và quay về màn hình trước đó, không cần tạo lại MainMenuActivity.
+                finish();
             }
         });
 
@@ -42,24 +46,33 @@ public class CreateBudgetActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String name = edtNameBudget.getText().toString().trim();
-                int money = Integer.parseInt(edtMoneyBudget.getText().toString().trim());
+                String moneyStr = edtMoneyBudget.getText().toString().trim();
                 String description = edtDescription.getText().toString().trim();
-                if (TextUtils.isEmpty(name)){
+
+                if (TextUtils.isEmpty(name)) {
                     edtNameBudget.setError("Enter Name Budget, PLS!!!!!!!!!");
                     return;
                 }
-                if (money <=0){
+                if (TextUtils.isEmpty(moneyStr)) {
+                    edtMoneyBudget.setError("Enter Money, PLS!!!!!!!!!");
+                    return;
+                }
+
+                int money = Integer.parseInt(moneyStr);
+                if (money <= 0) {
                     edtMoneyBudget.setError("Money Can't Be Zero or Negative, PLS!!!!!!!!!");
                     return;
                 }
-                long insert = repository.addNewBudget(name, money, description);
-                if (insert ==-1){
-                    Toast.makeText(CreateBudgetActivity.this, "Can not create budget", Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
+
+                // SỬA 2 (QUAN TRỌNG NHẤT): Gọi đúng tên hàm là "saveBudget".
+                long insertResult = repository.saveBudget(name, money, description);
+
+                if (insertResult > 0) { // Thành công khi kết quả trả về > 0
                     Toast.makeText(CreateBudgetActivity.this, "Create budget successfully", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(CreateBudgetActivity.this, MainMenuActivity.class);
-                    startActivity(intent);
+                    // SỬA 3: Tối ưu hóa. Gọi finish() để quay về.
+                    finish();
+                } else {
+                    Toast.makeText(CreateBudgetActivity.this, "Can not create budget", Toast.LENGTH_SHORT).show();
                 }
             }
         });
