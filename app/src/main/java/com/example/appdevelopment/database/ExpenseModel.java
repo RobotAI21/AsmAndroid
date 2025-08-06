@@ -1,5 +1,3 @@
-// Trong file: database/ExpenseModel.java
-
 package com.example.appdevelopment.database;
 
 public class ExpenseModel {
@@ -8,22 +6,30 @@ public class ExpenseModel {
     private int money;
     private String description;
     private int category;
-
-    // SỬA 1: Thêm thuộc tính status (kiểu số) vào đây
     private int status;
-
     private String createdAt;
+    // Thêm trường để lưu budget_id
+    private int budgetId;
 
-    // SỬA 2: Sửa lại Constructor để nhận đủ 7 tham số
-    // Bây giờ nó sẽ nhận cả status và createdAt
-    public ExpenseModel(int id, String name, int money, String description, int category, int status, String createdAt) {
+    // Sửa Constructor để nhận đủ tham số
+    public ExpenseModel(int id, String name, int money, String description, int category, int status, String createdAt, int budgetId) {
         this.id = id;
         this.name = name;
         this.money = money;
         this.description = description;
         this.category = category;
-        this.status = status; // Gán giá trị cho status
+        this.status = status;
         this.createdAt = createdAt;
+        this.budgetId = budgetId;
+    }
+
+    // Thêm getter và setter cho budgetId
+    public int getBudgetId() {
+        return budgetId;
+    }
+
+    public void setBudgetId(int budgetId) {
+        this.budgetId = budgetId;
     }
 
     // --- Giữ nguyên các hàm getter/setter cũ ---
@@ -39,8 +45,6 @@ public class ExpenseModel {
     public void setCategory(int category) { this.category = category; }
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
-
-    // SỬA 3: Thêm getter và setter cho thuộc tính status mới
     public int getStatus() { return status; }
     public void setStatus(int status) { this.status = status; }
 }

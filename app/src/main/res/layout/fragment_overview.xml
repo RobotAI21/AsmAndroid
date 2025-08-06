@@ -79,6 +79,12 @@
             android:id="@+id/pie_chart"
             android:layout_width="match_parent"
             android:layout_height="350dp" />
+        <Spinner
+            android:id="@+id/spinner_budget_overview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"/>
+
 
     </LinearLayout>
 </ScrollView>

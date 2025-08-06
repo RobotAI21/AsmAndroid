@@ -3,20 +3,16 @@ package com.example.appdevelopment.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.view.contentcapture.DataRemovalRequest;
-
 import androidx.annotation.Nullable;
 
 public class DbHelper extends SQLiteOpenHelper {
-    //Where define create Database and table
-    //logCat Tag
-    private static final String LOG = DbHelper.class.getName(); // use db class
-    //create name for db
+    private static final String LOG = DbHelper.class.getName();
     protected static final String DB_NAME = "campus_expenses";
-    protected static final int DB_VERSION = 4;
-    //tao ten bang db
+    // BƯỚC 1: Tăng phiên bản DB để kích hoạt onUpgrade
+    protected static final int DB_VERSION = 5;
+
+    // Bảng users
     protected static final String TABLE_USERS = "users";
-    //ten cac cot trong bang
     protected static final String COL_ID = "id";
     protected static final String COL_USERNAME = "username";
     protected static final String COL_PASSWORD = "password";
@@ -25,10 +21,6 @@ public class DbHelper extends SQLiteOpenHelper {
     protected static final String COL_ROLE = "role";
     protected static final String COL_CREATED_AT = "created_at";
     protected static final String COL_UPDATED_AT = "updated_at";
-
-
-    //tao bang du lieu
-
 
     private static final String CREATE_TABLE_USERS = " CREATE TABLE " +
             TABLE_USERS + " ( " +
@@ -41,7 +33,7 @@ public class DbHelper extends SQLiteOpenHelper {
             COL_CREATED_AT + " DATETIME, " +
             COL_UPDATED_AT + " DATETIME )";
 
-    //dinh nghia bang budget
+    // Bảng budget
     protected static final String TABLE_BUDGET = "budget";
     protected static final String COL_BUDGET_ID = "id";
     protected static final String COL_BUDGET_NAME = "name";
@@ -59,7 +51,7 @@ public class DbHelper extends SQLiteOpenHelper {
             COL_CREATED_AT + " DATETIME, " +
             COL_UPDATED_AT + " DATETIME )";
 
-    //dinh nghia bang expense
+    // Bảng expense
     protected static final String TABLE_EXPENSE = "expense";
     protected static final String COL_EXPENSE_ID = "id";
     protected static final String COL_EXPENSE_NAME = "name";
@@ -67,7 +59,10 @@ public class DbHelper extends SQLiteOpenHelper {
     protected static final String COL_EXPENSE_DESCRIPTION = "description";
     protected static final String COL_EXPENSE_CATEGORY = "category";
     protected static final String COL_EXPENSE_STATUS = "status_expense";
+    // BƯỚC 2: Thêm cột để liên kết với budget
+    protected static final String COL_EXPENSE_BUDGET_ID = "budget_id";
 
+    // BƯỚC 3: Cập nhật câu lệnh tạo bảng expense
     private final String CREATE_TABLE_EXPENSE = " CREATE TABLE " +
             TABLE_EXPENSE + " ( " +
             COL_EXPENSE_ID +" INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -76,6 +71,7 @@ public class DbHelper extends SQLiteOpenHelper {
             COL_EXPENSE_STATUS + " TINYINT DEFAULT(1), " +
             COL_EXPENSE_DESCRIPTION + " TEXT, " +
             COL_EXPENSE_CATEGORY + " INTEGER NOT NULL, " +
+            COL_EXPENSE_BUDGET_ID + " INTEGER, " + // Thêm cột budget_id
             COL_CREATED_AT + " DATETIME, " +
             COL_UPDATED_AT + " DATETIME )";
 
@@ -88,7 +84,6 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_BUDGET);
         db.execSQL(CREATE_TABLE_EXPENSE);
-        // tao bang them vao day
     }
 
     @Override
@@ -97,9 +92,7 @@ public class DbHelper extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_BUDGET);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_EXPENSE);
-            //xoa bo cac bang neu loi and create again
             onCreate(db);
         }
-
     }
 }

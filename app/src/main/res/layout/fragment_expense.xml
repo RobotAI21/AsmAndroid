@@ -4,25 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ExpenseFragment"
-    android:padding="10dp">
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
     <Button
         android:id="@+id/btnCreateExpense"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Create Expense"
-        android:textSize="18sp"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/btn_orange_rounded"
-        android:elevation="3dp" />
+        android:layout_height="wrap_content"
+        android:text="Create New Expense"
+        android:layout_alignParentTop="true"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvExpense"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/btnCreateExpense"
-        android:layout_marginTop="10dp"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp"/>
+        android:layout_marginTop="10dp"/>
+
 </RelativeLayout>

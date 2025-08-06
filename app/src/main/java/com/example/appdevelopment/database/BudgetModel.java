@@ -19,6 +19,17 @@ public class BudgetModel {
         this.updatedAt = updatedAt;
     }
 
+    // Giữ nguyên các getters và setters
+
+    /**
+     * Override phương thức toString() để Spinner có thể hiển thị tên của budget.
+     * @return Tên của ngân sách.
+     */
+    @Override
+    public String toString() {
+        return this.nameBudget;
+    }
+
     public int getId() {
         return id;
     }
