@@ -18,7 +18,7 @@ import java.util.List;
 public class EditExpenseActivity extends AppCompatActivity {
     EditText edtExpenseName, edtExpenseMoney, edtExpenseDescription;
     RadioGroup rgExpenseCategory;
-    Spinner spinnerBudgetSelection; // Thêm Spinner
+    Spinner spinnerBudgetSelection;
     Button btnSave, btnBack;
 
     ExpenseRepository repository;
@@ -38,7 +38,7 @@ public class EditExpenseActivity extends AppCompatActivity {
         edtExpenseMoney = findViewById(R.id.edtExpenseMoney);
         edtExpenseDescription = findViewById(R.id.edtBudgetDescription);
         rgExpenseCategory = findViewById(R.id.rgExpenseCategory);
-        spinnerBudgetSelection = findViewById(R.id.spinner_budget_selection); // Thay ID cho đúng
+        spinnerBudgetSelection = findViewById(R.id.spinner_budget_selection);
         btnSave = findViewById(R.id.btnSave);
         btnBack = findViewById(R.id.btnBackExpense);
 
@@ -60,7 +60,6 @@ public class EditExpenseActivity extends AppCompatActivity {
         // Cài đặt Spinner
         setupBudgetSpinner();
 
-        // Xử lý sự kiện click
         btnSave.setOnClickListener(v -> updateExpense());
         btnBack.setOnClickListener(v -> finish());
     }

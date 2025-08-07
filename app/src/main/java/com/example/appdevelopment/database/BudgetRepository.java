@@ -98,4 +98,16 @@ public class BudgetRepository {
         db.close();
         return total;
     }
+    // Hàm này lấy số tiền của ngân sách theo ID
+    public int getBudgetAmountById(int budgetId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        int amount = 0;
+        Cursor cursor = db.rawQuery("SELECT " + DbHelper.COL_BUDGET_MONEY + " FROM " + DbHelper.TABLE_BUDGET + " WHERE " + DbHelper.COL_BUDGET_ID + " = ?", new String[]{String.valueOf(budgetId)});
+        if (cursor.moveToFirst()) {
+            amount = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_BUDGET_MONEY));
+        }
+        cursor.close();
+        db.close();
+        return amount;
+    }
 }

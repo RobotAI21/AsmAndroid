@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.appdevelopment.utils.Notification;
 import com.github.mikephil.charting.data.PieEntry;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,9 +16,9 @@ import java.util.Locale;
 public class ExpenseRepository {
 
     private DbHelper dbHelper;
-
+    private final Context context;
     public ExpenseRepository(Context context) {
-        this.dbHelper = new DbHelper(context);
+        this.dbHelper = new DbHelper(context); this.context = context;
     }
 
     private String getCurrentDateTime() {
@@ -37,7 +39,21 @@ public class ExpenseRepository {
         values.put(DbHelper.COL_UPDATED_AT, getCurrentDateTime());
         long result = db.insert(DbHelper.TABLE_EXPENSE, null, values);
         db.close();
+        checkIfExceededBudget(budgetId);
         return result;
+    }
+    // Hàm kiểm tra xem chi tiêu có vượt quá ngân sách hay không
+    private void checkIfExceededBudget(int budgetId) {
+        int totalExpenses = getTotalMonthlyExpensesByBudget(budgetId);
+        int budgetAmount = new BudgetRepository(context).getBudgetAmountById(budgetId);
+
+        if (totalExpenses > budgetAmount) {
+            Notification.showBudgetWarningNotification(
+                    context,
+                    "Chi tiêu vượt ngân sách!",
+                    "Bạn đã chi tiêu " + totalExpenses + "đ vượt quá ngân sách " + budgetAmount + "đ."
+            );
+        }
     }
 
     // Sửa hàm updateExpense để nhận thêm budgetId
@@ -50,7 +66,10 @@ public class ExpenseRepository {
         values.put(DbHelper.COL_EXPENSE_CATEGORY, category);
         values.put(DbHelper.COL_EXPENSE_BUDGET_ID, budgetId); // Thêm budget_id
         values.put(DbHelper.COL_UPDATED_AT, getCurrentDateTime());
-        return db.update(DbHelper.TABLE_EXPENSE, values, DbHelper.COL_EXPENSE_ID + " =?", new String[]{String.valueOf(expenseId)});
+        int result = db.update(DbHelper.TABLE_EXPENSE, values, DbHelper.COL_EXPENSE_ID + " =?", new String[]{String.valueOf(expenseId)});
+        db.close();
+        checkIfExceededBudget(budgetId); // Kiểm tra lại sau khi cập nhật
+        return result;
     }
 
     // Sửa hàm getAllExpenses để lấy thêm budgetId
@@ -100,7 +119,7 @@ public class ExpenseRepository {
     // Hàm mới: Lấy dữ liệu biểu đồ của tháng theo một ngân sách cụ thể
     public ArrayList<PieEntry> getSpendingByCategoryForCurrentMonthByBudget(int budgetId) {
         ArrayList<PieEntry> entries = new ArrayList<>();
-        String[] categoryNames = {"Ăn uống", "Di chuyển", "Mua sắm", "Giải trí", "Khác"};
+        String[] categoryNames = {"Food", "Travel", "Shopping", "", "Other"};
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String query = "SELECT " + DbHelper.COL_EXPENSE_CATEGORY + ", SUM(" + DbHelper.COL_EXPENSE_MONEY + ") as total FROM " +
                 DbHelper.TABLE_EXPENSE + " WHERE strftime('%Y-%m', " + DbHelper.COL_CREATED_AT +
@@ -119,4 +138,5 @@ public class ExpenseRepository {
         db.close();
         return entries;
     }
+
 }

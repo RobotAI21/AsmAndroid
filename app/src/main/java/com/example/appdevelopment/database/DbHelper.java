@@ -75,10 +75,13 @@ public class DbHelper extends SQLiteOpenHelper {
             COL_CREATED_AT + " DATETIME, " +
             COL_UPDATED_AT + " DATETIME )";
 
+    private final Context context;
     public DbHelper(@Nullable Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
+        super(context, DB_NAME, null, DB_VERSION); this.context = context;
     }
-
+    public Context getContext() {
+        return context;
+    }
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USERS);

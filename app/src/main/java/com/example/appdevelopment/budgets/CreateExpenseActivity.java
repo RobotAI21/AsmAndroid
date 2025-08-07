@@ -47,6 +47,7 @@ public class CreateExpenseActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
 
         btnSave.setOnClickListener(v -> saveExpense());
+
     }
 
     private void setupBudgetSpinner() {

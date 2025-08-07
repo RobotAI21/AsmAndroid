@@ -22,7 +22,6 @@ public class ExpenseModel {
         this.createdAt = createdAt;
         this.budgetId = budgetId;
     }
-
     // Thêm getter và setter cho budgetId
     public int getBudgetId() {
         return budgetId;
