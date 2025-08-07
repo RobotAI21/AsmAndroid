@@ -1,118 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".budgets.CreateExpenseActivity">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tên khoản chi:"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/edtExpenseName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Ví dụ: Ăn trưa"
-        android:inputType="textCapWords" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Số tiền:"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/edtExpenseMoney"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Ví dụ: 50000"
-        android:inputType="number" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Chọn ngân sách:"
-        android:textSize="16sp" />
-
-    <Spinner
-        android:id="@+id/spinner_budget_selection"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@android:drawable/btn_dropdown"
-        android:spinnerMode="dropdown"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Phân loại:"
-        android:textSize="16sp" />
-
-    <RadioGroup
-        android:id="@+id/rgExpenseCategory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/rbCat1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ăn uống"/>
-        <RadioButton
-            android:id="@+id/rbCat2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Di chuyển"/>
-        <RadioButton
-            android:id="@+id/rbCat3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mua sắm"/>
-    </RadioGroup>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Mô tả (không bắt buộc):"
-        android:textSize="16sp" />
-
-    <EditText
-        android:id="@+id/edtBudgetDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Thêm mô tả chi tiết"
-        android:inputType="textMultiLine" />
+    android:background="#F0F8F4">
 
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="24dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/btnBackExpense"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Quay lại"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:text="Create New Expense"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#317256"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:letterSpacing="0.05"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expense Name:"
+            android:textSize="16sp"
+            android:textColor="#317256"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/edtExpenseName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. Lunch"
+            android:inputType="textCapWords"
+            android:background="@drawable/edittext_rounded_bg"
+            android:padding="14dp"
+            android:textColor="#1B4332"
+            android:textColorHint="#757575"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amount:"
+            android:textSize="16sp"
+            android:textColor="#317256"
+            android:layout_marginBottom="8dp" />
+
+        <EditText
+            android:id="@+id/edtExpenseMoney"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. 50000"
+            android:inputType="numberDecimal"
+            android:background="@drawable/edittext_rounded_bg"
+            android:padding="14dp"
+            android:textColor="#1B4332"
+            android:textColorHint="#757575"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Budget:"
+            android:textSize="16sp"
+            android:textColor="#317256"
+            android:layout_marginBottom="8dp" />
+
+        <Spinner
+            android:id="@+id/spinner_budget_selection"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:layout_marginBottom="16dp"
+            android:spinnerMode="dropdown"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#317256"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <RadioGroup
+            android:id="@+id/rgExpenseCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
+
+            <RadioButton
+                android:id="@+id/rbCat1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Food Drinks"
+                android:textColor="#333333"/>
+
+            <RadioButton
+                android:id="@+id/rbCat2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Transportation"
+                android:textColor="#333333"/>
+
+            <RadioButton
+                android:id="@+id/rbCat3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Shopping"
+                android:textColor="#333333"/>
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description (optional):"
+            android:textSize="16sp"
+            android:textColor="#317256"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/edtBudgetDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Add more details"
+            android:inputType="textMultiLine"
+            android:background="@drawable/edittext_rounded_bg"
+            android:padding="14dp"
+            android:textColor="#1B4332"
+            android:textColorHint="#757575"
+            android:layout_marginBottom="30dp" />
 
         <Button
             android:id="@+id/btnSave"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Lưu"
-            style="?android:attr/buttonBarButtonStyle" />
-    </LinearLayout>
+            android:text="Save"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#D4AF37"
+            android:padding="14dp"
+            android:layout_marginBottom="12dp" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/btnBackExpense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#A67C00"
+            android:padding="14dp" />
+    </LinearLayout>
+</ScrollView>

@@ -1,6 +1,8 @@
 package com.example.appdevelopment.database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
@@ -98,4 +100,21 @@ public class DbHelper extends SQLiteOpenHelper {
             onCreate(db);
         }
     }
+    public boolean isEmailExists(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_EMAIL + " = ?", new String[]{email});
+        boolean exists = cursor.getCount() > 0;
+        cursor.close();
+        return exists;
+    }
+
+    public boolean updatePassword(String email, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_PASSWORD, newPassword);
+        values.put(COL_UPDATED_AT, System.currentTimeMillis());
+        int rows = db.update(TABLE_USERS, values, COL_EMAIL + "=?", new String[]{email});
+        return rows > 0;
+    }
+
 }

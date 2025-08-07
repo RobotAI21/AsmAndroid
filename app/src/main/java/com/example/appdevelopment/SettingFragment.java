@@ -2,11 +2,20 @@ package com.example.appdevelopment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import com.example.appdevelopment.database.DbHelper;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +23,10 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class SettingFragment extends Fragment {
+    private EditText edtEmail, edtNewPassword;
+    private Button btnVerifyEmail, btnChangePassword;
+    private LinearLayout passwordSection;
+    private DbHelper dbHelper;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,5 +73,56 @@ public class SettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_setting, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        edtEmail = view.findViewById(R.id.edtEmail);
+        edtNewPassword = view.findViewById(R.id.edtNewPassword);
+        btnVerifyEmail = view.findViewById(R.id.btnVerifyEmail);
+        btnChangePassword = view.findViewById(R.id.btnChangePassword);
+        passwordSection = view.findViewById(R.id.passwordSection);
+        dbHelper = new DbHelper(requireContext());
+
+        passwordSection.setVisibility(View.GONE);
+
+        btnVerifyEmail.setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
+
+            if (email.isEmpty()) {
+                edtEmail.setError("Please enter email");
+                return;
+            }
+
+            if (dbHelper.isEmailExists(email)) {
+                Toast.makeText(getContext(), "Email verified. Please enter new password.", Toast.LENGTH_SHORT).show();
+                passwordSection.setVisibility(View.VISIBLE);
+            } else {
+                Toast.makeText(getContext(), "Email not found.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnChangePassword.setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
+            String newPassword = edtNewPassword.getText().toString().trim();
+
+            if (newPassword.length() < 6) {
+                edtNewPassword.setError("Password must be at least 6 characters");
+                return;
+            }
+
+            if (dbHelper.updatePassword(email, newPassword)) {
+                Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_LONG).show();
+                requireActivity().getSupportFragmentManager().popBackStack();
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.fragment_container, new OverviewFragment());
+                transaction.addToBackStack(null);
+                transaction.commit();
+            } else {
+                Toast.makeText(getContext(), "Failed to update password", Toast.LENGTH_SHORT).show();
+            }
+
+        });
     }
 }
