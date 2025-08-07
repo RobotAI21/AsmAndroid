@@ -14,9 +14,9 @@
             android:id="@+id/menu_budget"
             android:icon="@drawable/budget_icon"/>
         <item
-            android:title="Setting"
-            android:id="@+id/menu_setting"
-            android:icon="@drawable/setting_icon"/>
+            android:title="Profile"
+            android:id="@+id/menu_profile"
+            android:icon="@drawable/profile"/>
     </group>
     <item android:title="Others">
         <menu>

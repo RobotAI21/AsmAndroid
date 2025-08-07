@@ -39,6 +39,13 @@ public class BudgetFragment extends Fragment {
 
         btnCreate.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CreateBudgetActivity.class);
+            
+            // Lấy thông tin user từ MainMenuActivity
+            MainMenuActivity activity = (MainMenuActivity) getActivity();
+            if (activity != null) {
+                activity.passUserInfoToActivity(intent);
+            }
+            
             startActivity(intent);
         });
 
@@ -48,7 +55,16 @@ public class BudgetFragment extends Fragment {
     // Tải và làm mới dữ liệu
     private void loadBudgets() {
         if (repository != null && recyclerView != null) {
-            budgets = repository.getAllBudgets();
+            // Lấy userId từ MainMenuActivity
+            MainMenuActivity activity = (MainMenuActivity) getActivity();
+            if (activity != null) {
+                int userId = activity.getCurrentUserId();
+                // Chỉ lấy budget của user hiện tại
+                budgets = repository.getBudgetsByUserId(userId);
+            } else {
+                // Fallback: lấy tất cả budget nếu không có activity
+                budgets = repository.getAllBudgets();
+            }
             adapter = new BudgetAdapter(budgets);
             recyclerView.setAdapter(adapter);
         }

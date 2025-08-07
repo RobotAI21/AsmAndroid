@@ -1,12 +1,16 @@
 package com.example.appdevelopment;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import android.content.SharedPreferences;
+
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +25,12 @@ import com.example.appdevelopment.database.DbHelper;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link SettingFragment#newInstance} factory method to
+ * Use the {@link ProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SettingFragment extends Fragment {
+public class ProfileFragment extends Fragment {
     private EditText edtEmail, edtNewPassword;
-    private Button btnVerifyEmail, btnChangePassword;
+    private Button btnVerifyEmail, btnChangePassword, btnLogout;
     private LinearLayout passwordSection;
     private DbHelper dbHelper;
     private TextView tvUsername, tvEmail, tvCreatedDate;
@@ -41,7 +45,7 @@ public class SettingFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public SettingFragment() {
+    public ProfileFragment() {
         // Required empty public constructor
     }
 
@@ -54,8 +58,8 @@ public class SettingFragment extends Fragment {
      * @return A new instance of fragment SettingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SettingFragment newInstance(String param1, String param2) {
-        SettingFragment fragment = new SettingFragment();
+    public static ProfileFragment newInstance(String param1, String param2) {
+        ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -76,7 +80,7 @@ public class SettingFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting, container, false);
+        return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
@@ -90,10 +94,29 @@ public class SettingFragment extends Fragment {
         tvUsername = view.findViewById(R.id.tvUsername);
         tvEmail = view.findViewById(R.id.tvEmail);
         tvCreatedDate = view.findViewById(R.id.tvCreatedDate);
-
+        btnLogout = view.findViewById(R.id.btnLogout);
 
 
         dbHelper = new DbHelper(requireContext());
+        SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+
+
+        if (userId != -1) {
+            Cursor cursor = dbHelper.getUserInfoById(userId);
+            if (cursor.moveToFirst()) {
+                String username = cursor.getString(cursor.getColumnIndexOrThrow("username"));
+                String email = cursor.getString(cursor.getColumnIndexOrThrow("email"));
+                String createdAt = cursor.getString(cursor.getColumnIndexOrThrow("created_at"));
+
+                tvUsername.setText("Username: " + username);
+                tvEmail.setText("Email: " + email);
+                tvCreatedDate.setText("Created Date: " + createdAt);
+            }
+            cursor.close();
+        }
+
+
 
         passwordSection.setVisibility(View.GONE);
 
@@ -135,6 +158,18 @@ public class SettingFragment extends Fragment {
 
         });
 
+        btnLogout.setOnClickListener(v -> {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.clear();
+                editor.apply();
+
+                Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+
+                // Quay về màn hình LoginActivity
+                Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Xóa back stack
+                startActivity(intent);
+        });
 
     }
 }

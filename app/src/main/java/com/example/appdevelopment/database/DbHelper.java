@@ -11,7 +11,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String LOG = DbHelper.class.getName();
     protected static final String DB_NAME = "campus_expenses";
     // BƯỚC 1: Tăng phiên bản DB để kích hoạt onUpgrade
-    protected static final int DB_VERSION = 5;
+    protected static final int DB_VERSION = 7;
 
     // Bảng users
     protected static final String TABLE_USERS = "users";
@@ -42,6 +42,8 @@ public class DbHelper extends SQLiteOpenHelper {
     protected static final String COL_BUDGET_MONEY = "money";
     protected static final String COL_BUDGET_DESCRIPTION = "description";
     protected static final String COL_BUDGET_STATUS = "status_budget";
+    // Thêm trường user_id để cá nhân hóa
+    protected static final String COL_BUDGET_USER_ID = "user_id";
 
     private final String CREATE_TABLE_BUDGET = " CREATE TABLE " +
             TABLE_BUDGET + " ( " +
@@ -50,8 +52,10 @@ public class DbHelper extends SQLiteOpenHelper {
             COL_BUDGET_MONEY + " INTEGER NOT NULL, " +
             COL_BUDGET_STATUS + " TINYINT DEFAULT(1), " +
             COL_BUDGET_DESCRIPTION + " TEXT, " +
+            COL_BUDGET_USER_ID + " INTEGER NOT NULL, " + // Thêm user_id
             COL_CREATED_AT + " DATETIME, " +
-            COL_UPDATED_AT + " DATETIME )";
+            COL_UPDATED_AT + " DATETIME, " +
+            "FOREIGN KEY(" + COL_BUDGET_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + "))";
 
     // Bảng expense
     protected static final String TABLE_EXPENSE = "expense";
@@ -59,12 +63,10 @@ public class DbHelper extends SQLiteOpenHelper {
     protected static final String COL_EXPENSE_NAME = "name";
     protected static final String COL_EXPENSE_MONEY = "money";
     protected static final String COL_EXPENSE_DESCRIPTION = "description";
-    protected static final String COL_EXPENSE_CATEGORY = "category";
     protected static final String COL_EXPENSE_STATUS = "status_expense";
-    // BƯỚC 2: Thêm cột để liên kết với budget
     protected static final String COL_EXPENSE_BUDGET_ID = "budget_id";
+    protected static final String COL_EXPENSE_USER_ID = "user_id";
 
-    // BƯỚC 3: Cập nhật câu lệnh tạo bảng expense
     private final String CREATE_TABLE_EXPENSE = " CREATE TABLE " +
             TABLE_EXPENSE + " ( " +
             COL_EXPENSE_ID +" INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -72,10 +74,12 @@ public class DbHelper extends SQLiteOpenHelper {
             COL_EXPENSE_MONEY + " INTEGER NOT NULL, " +
             COL_EXPENSE_STATUS + " TINYINT DEFAULT(1), " +
             COL_EXPENSE_DESCRIPTION + " TEXT, " +
-            COL_EXPENSE_CATEGORY + " INTEGER NOT NULL, " +
-            COL_EXPENSE_BUDGET_ID + " INTEGER, " + // Thêm cột budget_id
+            COL_EXPENSE_BUDGET_ID + " INTEGER, " +
+            COL_EXPENSE_USER_ID + " INTEGER NOT NULL, " +
             COL_CREATED_AT + " DATETIME, " +
-            COL_UPDATED_AT + " DATETIME )";
+            COL_UPDATED_AT + " DATETIME, " +
+            "FOREIGN KEY(" + COL_EXPENSE_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COL_ID + "), " +
+            "FOREIGN KEY(" + COL_EXPENSE_BUDGET_ID + ") REFERENCES " + TABLE_BUDGET + "(" + COL_BUDGET_ID + "))";
 
     private final Context context;
     public DbHelper(@Nullable Context context) {
@@ -116,5 +120,32 @@ public class DbHelper extends SQLiteOpenHelper {
         int rows = db.update(TABLE_USERS, values, COL_EMAIL + "=?", new String[]{email});
         return rows > 0;
     }
+
+    public Cursor getUserInfoById(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE " + COL_ID + " = ?", new String[]{String.valueOf(userId)});
+    }
+
+    public boolean checkPassword(int userId, String oldPassword) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT * FROM " + TABLE_USERS + " WHERE " + COL_ID + " = ? AND " + COL_PASSWORD + " = ?",
+                new String[]{String.valueOf(userId), oldPassword}
+        );
+        boolean match = cursor.getCount() > 0;
+        cursor.close();
+        return match;
+    }
+
+    public boolean updatePasswordById(int userId, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COL_PASSWORD, newPassword);
+        values.put(COL_UPDATED_AT, System.currentTimeMillis());
+
+        int rows = db.update(TABLE_USERS, values, COL_ID + "=?", new String[]{String.valueOf(userId)});
+        return rows > 0;
+    }
+
 
 }

@@ -49,7 +49,7 @@ public class UserRepository extends DbHelper{
             SQLiteDatabase db = this.getReadableDatabase(); //cau lenh select
             //tao mang chua cot dl muon thao tac
             //select id,username,email,phone,role from user where username = ? and password = ?
-            String[] cols = {DbHelper.COL_ID, DbHelper.COL_USERNAME, DbHelper.COL_EMAIL, DbHelper.COL_PHONE, DbHelper.COL_ROLE};
+            String[] cols = {DbHelper.COL_ID, DbHelper.COL_USERNAME, DbHelper.COL_EMAIL, DbHelper.COL_PHONE, DbHelper.COL_ROLE, DbHelper.COL_CREATED_AT};
             String condition = DbHelper.COL_USERNAME + " =? AND " + DbHelper.COL_PASSWORD + " =? ";
             String[] params = { username, password };
             Cursor data = db.query(DbHelper.TABLE_USERS, cols, condition, params, null, null, null);
@@ -63,6 +63,7 @@ public class UserRepository extends DbHelper{
                 userAccount.setEmail(data.getString(data.getColumnIndex(DbHelper.COL_EMAIL)));
                 userAccount.setPhone(data.getString(data.getColumnIndex(DbHelper.COL_PHONE)));
                 userAccount.setRole(data.getInt(data.getColumnIndex(DbHelper.COL_ROLE)));
+                userAccount.setCreatedAt(data.getString(data.getColumnIndex(DbHelper.COL_CREATED_AT)));
             }
             data.close();
             db.close();
@@ -72,5 +73,35 @@ public class UserRepository extends DbHelper{
         //Log.i("DATA_USER", userAccount.getUsername());
         return userAccount;
     }
+
+    public boolean updatePassword(int userId, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("password", newPassword);
+
+        int rows = db.update("users", values, "id = ?", new String[]{String.valueOf(userId)});
+        db.close();
+        return rows > 0;
+    }
+
+    public UserModel getUserByUsername(String username) {
+        Cursor cursor = this.getReadableDatabase().rawQuery(
+                "SELECT * FROM " + DbHelper.TABLE_USERS + " WHERE username = ?",
+                new String[]{username}
+        );
+        if (cursor != null && cursor.moveToFirst()) {
+            UserModel user = new UserModel();
+            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow("username")));
+            user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow("password")));
+            user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow("email")));
+            user.setRole(cursor.getInt(cursor.getColumnIndexOrThrow("role")));
+            user.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow("created_at")));
+            cursor.close();
+            return user;
+        }
+        return null;
+    }
+
 
 }

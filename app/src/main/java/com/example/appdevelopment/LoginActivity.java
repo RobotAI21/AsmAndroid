@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.appdevelopment.database.UserModel;
@@ -23,7 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
-    TextView tvRegister;
+    TextView tvRegister, tvForgotPassword;
     EditText edtUsername, edtPassword;
     Button btnLogin;
     UserRepository repository;
@@ -41,6 +42,8 @@ public class LoginActivity extends AppCompatActivity {
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        tvForgotPassword.setOnClickListener(v -> showForgotPasswordDialog());
 
         findViewById(R.id.tvRegister).startAnimation(fadeIn);
         findViewById(R.id.edtUsername).startAnimation(slideUp);
@@ -76,7 +79,11 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putInt("userId", infoAccount.getId());
+                    editor.putString("username", infoAccount.getUsername());
+                    editor.putString("email", infoAccount.getEmail());
+                    editor.putString("created_at", infoAccount.getCreatedAt()); // đảm bảo có getCreatedAt()
                     editor.apply();
+
 
                     //login successfully
                     Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
@@ -96,57 +103,67 @@ public class LoginActivity extends AppCompatActivity {
         });
 
     }
-    private void checkLoginInDataFile(){
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String Username = edtUsername.getText().toString().trim();
-                String Password = edtPassword.getText().toString().trim();
-                if (TextUtils.isEmpty("")){
-                    edtUsername.setError("Enter Username, PLEASE!!!!!");
-                    return;
-                }
-                if (TextUtils.isEmpty("")){
-                    edtPassword.setError("Enter Password, PLEASE!!!!!");
-                    return;
-                }
-                //Read data in file internal storage (account.txt)
-                try {
-                    FileInputStream fileInput = openFileInput("account.txt"); //open file internal
-                    int read =-1;
-                    StringBuilder builder = new StringBuilder();
-                    while ((read =fileInput.read()) != -1){
-                        builder.append((char)read);
-                        //get all data from file gan vao builder
-                    }
-                    fileInput.close();
-                    String[] userAccount = builder.toString().trim().split("\n"); //split: bien chuoi thanh mang
-                    boolean checkLogin = false;
-                    for(int i =0; i < userAccount.length; i++){
-                        String user = userAccount[i].substring(0, userAccount[i].indexOf("|")); //subString: cat chuoi tu dau tien cuoi, indexOf: tim vi tri phan tu
-                        String pass = userAccount[i].substring(userAccount[i].indexOf("|")+1);
-                        if(Username.equals(user) && Password.equals(pass)){
-                            checkLogin = true;
-                            break;
-                        }
-                    }
-                    if (checkLogin){
-                        Toast.makeText(LoginActivity.this, "Login successfully", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LoginActivity.this, MenuActivity.class);
-                        startActivity(intent);
-                        Bundle bundle = new Bundle();
-                        //
+    private void showForgotPasswordDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_forgot_password, null);
 
-                    }else{
-                        Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        EditText edtUsername = dialogView.findViewById(R.id.edtUsernameForgot);
+        EditText edtOldPassword = dialogView.findViewById(R.id.edtOldPassword);
+        EditText edtNewPassword = dialogView.findViewById(R.id.edtNewPassword);
+        EditText edtConfirmPassword = dialogView.findViewById(R.id.edtConfirmPassword);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Forgot Password")
+                .setView(dialogView)
+                .setPositiveButton("Submit", null)
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            Button btnSubmit = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            btnSubmit.setOnClickListener(view -> {
+                String username = edtUsername.getText().toString().trim();
+                String oldPassword = edtOldPassword.getText().toString().trim();
+                String newPassword = edtNewPassword.getText().toString().trim();
+                String confirmPassword = edtConfirmPassword.getText().toString().trim();
+
+                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(oldPassword)
+                        || TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(confirmPassword)) {
+                    Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-            }
+
+                if (!newPassword.equals(confirmPassword)) {
+                    Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                UserModel user = repository.getUserByUsername(username);
+                if (user != null && user.getPassword().equals(oldPassword)) {
+                    boolean updated = repository.updatePassword(user.getId(), newPassword);
+                    if (updated) {
+                        Toast.makeText(this, "Password changed successfully!", Toast.LENGTH_SHORT).show();
+
+                        SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("userId", user.getId());
+                        editor.putString("username", user.getUsername());
+                        editor.putString("email", user.getEmail());
+                        editor.putString("created_at", user.getCreatedAt());
+                        editor.apply();
+
+                        Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(this, "Failed to update password", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this, "Old password is incorrect", Toast.LENGTH_SHORT).show();
+                }
+            });
         });
+
+        dialog.show();
     }
+
 }

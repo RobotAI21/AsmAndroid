@@ -43,6 +43,13 @@ public class ExpenseFragment extends Fragment {
         Button btnCreate = view.findViewById(R.id.btnCreateExpense);
         btnCreate.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CreateExpenseActivity.class);
+            
+            // Lấy thông tin user từ MainMenuActivity
+            MainMenuActivity activity = (MainMenuActivity) getActivity();
+            if (activity != null) {
+                activity.passUserInfoToActivity(intent);
+            }
+            
             startActivity(intent);
         });
 
@@ -52,7 +59,16 @@ public class ExpenseFragment extends Fragment {
     // Tải và làm mới dữ liệu
     private void loadExpenses() {
         if (repository != null && recyclerView != null) {
-            expenses = repository.getAllExpenses();
+            // Lấy userId từ MainMenuActivity
+            MainMenuActivity activity = (MainMenuActivity) getActivity();
+            if (activity != null) {
+                int userId = activity.getCurrentUserId();
+                // Chỉ lấy expense của user hiện tại
+                expenses = repository.getExpensesByUserId(userId);
+            } else {
+                // Fallback: lấy tất cả expense nếu không có activity
+                expenses = repository.getAllExpenses();
+            }
             adapter = new ExpenseAdapter(expenses);
             recyclerView.setAdapter(adapter);
         }

@@ -32,7 +32,7 @@ public class Notification {
         }
 
         // Build notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)  // FIX chỗ này!
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -50,4 +50,48 @@ public class Notification {
         // Show notification
         notificationManager.notify(1001, builder.build());
     }
+
+    // Thông báo khi vượt quá ngân sách
+    public static void showBudgetExceededNotification(Context context, String budgetName, int spentAmount, int budgetLimit) {
+        String notifyKey = "warning_" + budgetName;
+        if (hasNotified(context, notifyKey)) {
+            return; // Đã thông báo rồi thì không gửi lại
+        }
+        String title = "Chi tiêu vượt ngân sách!";
+        String message = "Bạn đã chi tiêu " + formatCurrency(spentAmount) + " vượt quá ngân sách " + formatCurrency(budgetLimit) + ".";
+        
+        showBudgetWarningNotification(context, title, message);
+        markAsNotified(context, notifyKey);
+    }
+
+    // Thông báo cảnh báo ngân sách
+    public static void showBudgetWarningNotification(Context context, String budgetName, int remainingAmount) {
+        String notifyKey = "warning_" + budgetName;
+        if (hasNotified(context, notifyKey)) {
+            return; // Đã cảnh báo rồi thì không gửi lại
+        }
+        String title = "Cảnh báo ngân sách!";
+        String message = "Bạn chỉ còn " + formatCurrency(remainingAmount) + " trong ngân sách " + budgetName + ".";
+        
+        showBudgetWarningNotification(context, title, message);
+        markAsNotified(context, notifyKey);
+    }
+
+    // Format tiền tệ theo định dạng Việt Nam
+    private static String formatCurrency(int amount) {
+        return String.format("%,d₫", amount);
+    }
+
+    private static boolean hasNotified(Context context, String key) {
+        return context.getSharedPreferences("BudgetNotifications", Context.MODE_PRIVATE)
+                .getBoolean(key, false);
+    }
+
+    private static void markAsNotified(Context context, String key) {
+        context.getSharedPreferences("BudgetNotifications", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(key, true)
+                .apply();
+    }
+
 }

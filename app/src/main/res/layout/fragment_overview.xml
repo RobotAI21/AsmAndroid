@@ -39,7 +39,7 @@
                     android:id="@+id/tv_total_spending"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$750.00"
+                    android:text="750.000₫"
                     android:textColor="#E53935"
                     android:textSize="28sp"
                     android:textStyle="bold"
@@ -57,13 +57,30 @@
                     android:id="@+id/tv_remaining_budget"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$250.00"
+                    android:text="250.000₫"
                     android:textColor="#4AA96C"
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:layout_marginTop="4dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Budget Selection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Budget:"
+            android:textSize="16sp"
+            android:textColor="#317256"
+            android:layout_marginBottom="8dp"/>
+
+        <Spinner
+            android:id="@+id/spinner_budget_overview"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@android:drawable/btn_dropdown"
+            android:layout_marginBottom="16dp"
+            android:spinnerMode="dropdown"/>
 
         <!-- Spending Breakdown Chart -->
         <TextView
@@ -79,11 +96,6 @@
             android:id="@+id/pie_chart"
             android:layout_width="match_parent"
             android:layout_height="350dp" />
-        <Spinner
-            android:id="@+id/spinner_budget_overview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"/>
 
 
     </LinearLayout>
