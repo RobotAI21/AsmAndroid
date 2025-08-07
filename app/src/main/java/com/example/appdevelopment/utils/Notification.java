@@ -32,7 +32,7 @@ public class Notification {
         }
 
         // Build notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)  // FIX chỗ này!
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -49,5 +49,26 @@ public class Notification {
 
         // Show notification
         notificationManager.notify(1001, builder.build());
+    }
+
+    // Thông báo khi vượt quá ngân sách
+    public static void showBudgetExceededNotification(Context context, String budgetName, int spentAmount, int budgetLimit) {
+        String title = "Chi tiêu vượt ngân sách!";
+        String message = "Bạn đã chi tiêu " + formatCurrency(spentAmount) + " vượt quá ngân sách " + formatCurrency(budgetLimit) + ".";
+        
+        showBudgetWarningNotification(context, title, message);
+    }
+
+    // Thông báo cảnh báo ngân sách
+    public static void showBudgetWarningNotification(Context context, String budgetName, int remainingAmount) {
+        String title = "Cảnh báo ngân sách!";
+        String message = "Bạn chỉ còn " + formatCurrency(remainingAmount) + " trong ngân sách " + budgetName + ".";
+        
+        showBudgetWarningNotification(context, title, message);
+    }
+
+    // Format tiền tệ theo định dạng Việt Nam
+    private static String formatCurrency(int amount) {
+        return String.format("%,d₫", amount);
     }
 }

@@ -20,17 +20,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.Light.NoActionBar"
         tools:targetApi="31">
-        <activity android:name=".LifeSecondActivity"/>
-        <activity android:name=".LifeActivity"/>
-        <activity android:name=".TestEventActivity"/>
-        <activity android:name=".DemoComponentActivity"/>
-        <activity android:name=".SharedReferencesActivity"/>
         <activity android:name=".SingUpActivity"/>
         <activity android:name=".MainMenuActivity"/>
         <activity android:name=".budgets.CreateBudgetActivity"/>
         <activity android:name=".budgets.CreateExpenseActivity"/>
         <activity android:name=".EditBudgetActivity"/>
         <activity android:name=".EditExpenseActivity"/>
+        <activity android:name=".NotificationSettingsActivity"/>
         <activity
             android:name=".LoginActivity"
             android:exported="true">

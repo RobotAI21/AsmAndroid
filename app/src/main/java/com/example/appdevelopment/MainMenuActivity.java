@@ -30,6 +30,11 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
     Intent intent;
     Bundle bundle;
     TextView tvUsername;
+    // Thêm biến toàn cục để lưu thông tin user
+    private int currentUserId;
+    private String currentUsername;
+    private String currentEmail;
+    private int currentRole;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +47,19 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
          //tvUsername = findViewById(R.id.tvName);
         intent = getIntent();
         bundle = intent.getExtras();
-        if (bundle !=null){
-            String username = bundle.getString("USERNAME_ACCOUNT", "");
-            //tvUsername.setText(username);
+        if (bundle != null){
+            currentUserId = bundle.getInt("ID_ACCOUNT", -1);
+            currentUsername = bundle.getString("USERNAME_ACCOUNT", "");
+            currentEmail = bundle.getString("EMAIL_ACCOUNT", "");
+            currentRole = bundle.getInt("ROLE_ACCOUNT", 0);
+            //tvUsername.setText(currentUsername);
+        } else {
+            // Không có dữ liệu user, quay về LoginActivity
+            Intent loginIntent = new Intent(MainMenuActivity.this, LoginActivity.class);
+            loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(loginIntent);
+            finish();
+            return;
         }
 
         //xu ly draw menu
@@ -60,14 +75,16 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         itemLogout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(@NonNull MenuItem item) {
-                    //remove data in intent
-                    if(bundle !=null){
+                    // Xóa dữ liệu user khỏi Intent hiện tại
+                    if(bundle != null){
                         intent.removeExtra("USERNAME_ACCOUNT");
                         intent.removeExtra("ID_ACCOUNT");
                         intent.removeExtra("EMAIL_ACCOUNT");
                         intent.removeExtra("ROLE_ACCOUNT");
                     }
+                    // Chuyển về LoginActivity và xóa stack
                     Intent login = new Intent(MainMenuActivity.this, LoginActivity.class);
+                    login.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(login);
                     finish();
                 return false;
@@ -137,5 +154,32 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+    
+    // Thêm method để truyền thông tin user cho các Activity con
+    public int getCurrentUserId() {
+        return currentUserId;
+    }
+    
+    public String getCurrentUsername() {
+        return currentUsername;
+    }
+    
+    public String getCurrentEmail() {
+        return currentEmail;
+    }
+    
+    public int getCurrentRole() {
+        return currentRole;
+    }
+    
+    // Method để truyền thông tin user qua Intent
+    public void passUserInfoToActivity(Intent intent) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("USER_ID", currentUserId);
+        bundle.putString("USERNAME", currentUsername);
+        bundle.putString("EMAIL", currentEmail);
+        bundle.putInt("ROLE", currentRole);
+        intent.putExtras(bundle);
     }
 }

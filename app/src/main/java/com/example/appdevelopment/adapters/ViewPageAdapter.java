@@ -28,7 +28,7 @@ public class ViewPageAdapter extends FragmentStateAdapter {
             case 1:
                 return new ExpenseFragment();  // Màn hình Chi tiêu
             case 2:
-                return new BudgetFragment();   // Màn hình Ngân sách
+                return new BudgetFragment();   // Budget Screen
             case 3:
                 return new SettingFragment();  // Màn hình Cài đặt
             default:

@@ -78,44 +78,7 @@
             android:layout_marginBottom="16dp"
             android:spinnerMode="dropdown"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category:"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#317256"
-            android:layout_marginBottom="10dp"
-            android:fontFamily="sans-serif-medium" />
 
-        <RadioGroup
-            android:id="@+id/rgExpenseCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="20dp">
-
-            <RadioButton
-                android:id="@+id/rbCat1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Food Drinks"
-                android:textColor="#333333"/>
-
-            <RadioButton
-                android:id="@+id/rbCat2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Transportation"
-                android:textColor="#333333"/>
-
-            <RadioButton
-                android:id="@+id/rbCat3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Shopping"
-                android:textColor="#333333"/>
-        </RadioGroup>
 
         <TextView
             android:layout_width="wrap_content"

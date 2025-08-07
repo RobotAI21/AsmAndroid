@@ -71,7 +71,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
                     intent.putExtra("expense_name", exp.getName());
                     intent.putExtra("expense_money", exp.getMoney());
                     intent.putExtra("expense_description", exp.getDescription());
-                    intent.putExtra("expense_category", exp.getCategory());
+                    intent.putExtra("expense_budget_id", exp.getBudgetId());
                     context.startActivity(intent);
                 }
             }

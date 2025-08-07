@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import com.example.appdevelopment.database.BudgetModel;
 import com.example.appdevelopment.database.BudgetRepository;
 import com.example.appdevelopment.database.ExpenseRepository;
+import com.example.appdevelopment.utils.Notification;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -27,10 +28,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class OverviewFragment extends Fragment {
-
     private PieChart pieChart;
     private TextView tvTotalSpending, tvRemainingBudget;
-    private Spinner spinnerBudgetOverview; // Spinner để chọn budget
+    private Spinner spinnerBudgetSelection;
     private ExpenseRepository expenseRepository;
     private BudgetRepository budgetRepository;
     private List<BudgetModel> budgetList;
@@ -44,15 +44,13 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         expenseRepository = new ExpenseRepository(getContext());
         budgetRepository = new BudgetRepository(getContext());
-
         pieChart = view.findViewById(R.id.pie_chart);
         tvTotalSpending = view.findViewById(R.id.tv_total_spending);
         tvRemainingBudget = view.findViewById(R.id.tv_remaining_budget);
-        spinnerBudgetOverview = view.findViewById(R.id.spinner_budget_overview); // Thay ID cho đúng
-
+        spinnerBudgetSelection = view.findViewById(R.id.spinner_budget_overview);
+        
         setupPieChart();
         setupBudgetSpinner();
     }
@@ -60,56 +58,101 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Cập nhật lại spinner mỗi khi quay lại, phòng trường hợp có budget mới
         setupBudgetSpinner();
     }
 
     private void setupBudgetSpinner() {
-        budgetList = budgetRepository.getAllBudgets();
+        MainMenuActivity activity = (MainMenuActivity) getActivity();
+        int userId = (activity != null) ? activity.getCurrentUserId() : -1;
+        budgetList = budgetRepository.getBudgetsByUserId(userId);
+        
         ArrayAdapter<BudgetModel> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, budgetList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerBudgetOverview.setAdapter(adapter);
+        spinnerBudgetSelection.setAdapter(adapter);
 
-        spinnerBudgetOverview.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerBudgetSelection.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 BudgetModel selectedBudget = (BudgetModel) parent.getItemAtPosition(position);
                 if (selectedBudget != null) {
-                    loadDataForBudget(selectedBudget);
+                    loadDataForSelectedBudget(selectedBudget);
                 }
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                pieChart.clear();
-                tvTotalSpending.setText("0");
-                tvRemainingBudget.setText("0");
+                loadPieChartForAllBudgets();
             }
         });
 
         // Tải dữ liệu cho item đầu tiên nếu có
-        if (!budgetList.isEmpty()){
-            loadDataForBudget(budgetList.get(0));
+        if (!budgetList.isEmpty()) {
+            loadDataForSelectedBudget(budgetList.get(0));
         } else {
-            pieChart.clear();
-            pieChart.setCenterText("Vui lòng tạo ngân sách");
-            pieChart.invalidate();
-            tvTotalSpending.setText("0");
-            tvRemainingBudget.setText("0");
+            loadPieChartForAllBudgets();
         }
     }
 
-    private void loadDataForBudget(BudgetModel budget) {
-        int totalSpending = expenseRepository.getTotalMonthlyExpensesByBudget(budget.getId());
-        int totalBudget = budget.getMoneyBudget();
-        int remainingBudget = totalBudget - totalSpending;
-        ArrayList<PieEntry> chartEntries = expenseRepository.getSpendingByCategoryForCurrentMonthByBudget(budget.getId());
-
+    private void loadDataForSelectedBudget(BudgetModel selectedBudget) {
+        MainMenuActivity activity = (MainMenuActivity) getActivity();
+        int userId = (activity != null) ? activity.getCurrentUserId() : -1;
+        
+        int spending = expenseRepository.getTotalMonthlyExpensesByBudgetAndUser(selectedBudget.getId(), userId);
+        int totalBudget = selectedBudget.getMoneyBudget();
+        int remainingBudget = totalBudget - spending;
+        
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        tvTotalSpending.setText(currencyFormat.format(spending));
+        tvRemainingBudget.setText(currencyFormat.format(remainingBudget));
+        
+        // Kiểm tra và thông báo nếu vượt quá ngân sách
+        checkBudgetLimitAndNotify(selectedBudget, spending, remainingBudget);
+        
+        // Hiển thị các expense của budget được chọn
+        ArrayList<PieEntry> entries = expenseRepository.getExpensesByBudgetForCurrentMonthByUser(selectedBudget.getId(), userId);
+        
+        loadPieChartData(entries, selectedBudget.getNameBudget() + " Expenses");
+    }
 
+    private void loadPieChartForAllBudgets() {
+        MainMenuActivity activity = (MainMenuActivity) getActivity();
+        int userId = (activity != null) ? activity.getCurrentUserId() : -1;
+        budgetList = budgetRepository.getBudgetsByUserId(userId);
+        ArrayList<PieEntry> entries = new ArrayList<>();
+        int totalSpending = 0;
+        int totalBudget = 0;
+        for (BudgetModel budget : budgetList) {
+            int spending = expenseRepository.getTotalMonthlyExpensesByBudgetAndUser(budget.getId(), userId);
+            if (spending > 0) {
+                entries.add(new PieEntry(spending, budget.getNameBudget()));
+            }
+            totalSpending += spending;
+            totalBudget += budget.getMoneyBudget();
+        }
+        int remainingBudget = totalBudget - totalSpending;
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         tvTotalSpending.setText(currencyFormat.format(totalSpending));
         tvRemainingBudget.setText(currencyFormat.format(remainingBudget));
+        loadPieChartData(entries, "All Budgets");
+    }
 
-        loadPieChartData(chartEntries, budget.getNameBudget());
+    private void checkBudgetLimitAndNotify(BudgetModel budget, int spending, int remainingBudget) {
+        if (remainingBudget <= 0) {
+            // Vượt quá ngân sách
+            Notification.showBudgetExceededNotification(
+                getContext(),
+                budget.getNameBudget(),
+                spending,
+                budget.getMoneyBudget()
+            );
+        } else if (remainingBudget <= budget.getMoneyBudget() * 0.1) {
+            // Cảnh báo ngân sách (còn 10%)
+            Notification.showBudgetWarningNotification(
+                getContext(),
+                budget.getNameBudget(),
+                remainingBudget
+            );
+        }
     }
 
     private void setupPieChart() {
@@ -121,28 +164,23 @@ public class OverviewFragment extends Fragment {
         pieChart.getLegend().setEnabled(true);
     }
 
-    private void loadPieChartData(ArrayList<PieEntry> entries, String budgetName) {
+    private void loadPieChartData(ArrayList<PieEntry> entries, String title) {
         if (entries == null || entries.isEmpty()) {
             pieChart.clear();
-            pieChart.setCenterText("Không có chi tiêu cho ngân sách này");
+            pieChart.setCenterText("No Expenses");
             pieChart.invalidate();
             return;
         }
-
-        pieChart.setCenterText(budgetName);
-
+        pieChart.setCenterText(title);
         ArrayList<Integer> colors = new ArrayList<>();
         for (int color : ColorTemplate.MATERIAL_COLORS) { colors.add(color); }
         for (int color : ColorTemplate.VORDIPLOM_COLORS) { colors.add(color); }
-
-        PieDataSet dataSet = new PieDataSet(entries, "Phân loại chi tiêu");
+        PieDataSet dataSet = new PieDataSet(entries, "Budget");
         dataSet.setColors(colors);
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(Color.BLACK);
-
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter(pieChart));
-
         pieChart.setData(data);
         pieChart.invalidate();
         pieChart.animateY(1400);

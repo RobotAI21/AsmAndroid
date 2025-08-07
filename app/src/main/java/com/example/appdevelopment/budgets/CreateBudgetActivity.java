@@ -19,6 +19,9 @@ public class CreateBudgetActivity extends AppCompatActivity {
     EditText edtNameBudget, edtMoneyBudget, edtDescription;
     Button btnSave, btnBack;
     BudgetRepository repository;
+    // Thêm biến để lưu thông tin user
+    private int currentUserId;
+    private String currentUsername;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,6 +35,19 @@ public class CreateBudgetActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBackBudget);
 
         repository = new BudgetRepository(CreateBudgetActivity.this);
+        
+        // Lấy thông tin user từ Intent
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            currentUserId = bundle.getInt("USER_ID", -1);
+            currentUsername = bundle.getString("USERNAME", "");
+        } else {
+            // Không có thông tin user, quay về MainMenuActivity
+            Toast.makeText(this, "User information not found", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,8 +80,8 @@ public class CreateBudgetActivity extends AppCompatActivity {
                     return;
                 }
 
-                // SỬA 2 (QUAN TRỌNG NHẤT): Gọi đúng tên hàm là "saveBudget".
-                long insertResult = repository.saveBudget(name, money, description);
+                // SỬA 2 (QUAN TRỌNG NHẤT): Gọi đúng tên hàm là "saveBudget" với userId.
+                long insertResult = repository.saveBudget(name, money, description, currentUserId);
 
                 if (insertResult > 0) { // Thành công khi kết quả trả về > 0
                     Toast.makeText(CreateBudgetActivity.this, "Create budget successfully", Toast.LENGTH_SHORT).show();

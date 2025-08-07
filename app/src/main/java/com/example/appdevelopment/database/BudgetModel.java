@@ -8,8 +8,10 @@ public class BudgetModel {
     private int statusBudget;
     private String createdAt;
     private String updatedAt;
+    // Add userId field for personalization
+    private int userId;
 
-    public BudgetModel(int id, String nameBudget, int moneyBudget, String description, int statusBudget, String createdAt, String updatedAt ) {
+    public BudgetModel(int id, String nameBudget, int moneyBudget, String description, int statusBudget, String createdAt, String updatedAt, int userId) {
         this.id = id;
         this.nameBudget = nameBudget;
         this.moneyBudget = moneyBudget;
@@ -17,13 +19,14 @@ public class BudgetModel {
         this.statusBudget = statusBudget;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.userId = userId;
     }
 
-    // Giữ nguyên các getters và setters
+    // Keep all getters and setters
 
     /**
-     * Override phương thức toString() để Spinner có thể hiển thị tên của budget.
-     * @return Tên của ngân sách.
+     * Override toString() method so Spinner can display budget name.
+     * @return The name of the budget.
      */
     @Override
     public String toString() {
@@ -84,5 +87,14 @@ public class BudgetModel {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    // Add getter and setter for userId
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

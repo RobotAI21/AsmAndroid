@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.appdevelopment.utils.Notification;
+import com.example.appdevelopment.database.BudgetModel;
+import com.example.appdevelopment.database.BudgetRepository;
 import com.github.mikephil.charting.data.PieEntry;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,53 +28,28 @@ public class ExpenseRepository {
         return sdf.format(new Date());
     }
 
-    // Sửa hàm saveExpense để nhận thêm budgetId
-    public long saveExpense(String name, int money, String description, int category, int budgetId) {
+    // Modified saveExpense function to accept budgetId and userId
+    public long saveExpense(String name, int money, String description, int status, int budgetId, int userId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DbHelper.COL_EXPENSE_NAME, name);
         values.put(DbHelper.COL_EXPENSE_MONEY, money);
         values.put(DbHelper.COL_EXPENSE_DESCRIPTION, description);
-        values.put(DbHelper.COL_EXPENSE_CATEGORY, category);
-        values.put(DbHelper.COL_EXPENSE_BUDGET_ID, budgetId); // Thêm budget_id
+        values.put(DbHelper.COL_EXPENSE_STATUS, status);
+        values.put(DbHelper.COL_EXPENSE_BUDGET_ID, budgetId); // Add budget_id
+        values.put(DbHelper.COL_EXPENSE_USER_ID, userId); // Add user_id
         values.put(DbHelper.COL_CREATED_AT, getCurrentDateTime());
         values.put(DbHelper.COL_UPDATED_AT, getCurrentDateTime());
         long result = db.insert(DbHelper.TABLE_EXPENSE, null, values);
         db.close();
-        checkIfExceededBudget(budgetId);
         return result;
     }
-    // Hàm kiểm tra xem chi tiêu có vượt quá ngân sách hay không
-    private void checkIfExceededBudget(int budgetId) {
-        int totalExpenses = getTotalMonthlyExpensesByBudget(budgetId);
-        int budgetAmount = new BudgetRepository(context).getBudgetAmountById(budgetId);
-
-        if (totalExpenses > budgetAmount) {
-            Notification.showBudgetWarningNotification(
-                    context,
-                    "Chi tiêu vượt ngân sách!",
-                    "Bạn đã chi tiêu " + totalExpenses + "đ vượt quá ngân sách " + budgetAmount + "đ."
-            );
-        }
+    
+    // Overload method cũ để tương thích ngược
+    public long saveExpense(String name, int money, String description, int status, int budgetId) {
+        return saveExpense(name, money, description, status, budgetId, 1); // Default userId = 1
     }
 
-    // Sửa hàm updateExpense để nhận thêm budgetId
-    public int updateExpense(int expenseId, String name, int money, String description, int category, int budgetId) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DbHelper.COL_EXPENSE_NAME, name);
-        values.put(DbHelper.COL_EXPENSE_MONEY, money);
-        values.put(DbHelper.COL_EXPENSE_DESCRIPTION, description);
-        values.put(DbHelper.COL_EXPENSE_CATEGORY, category);
-        values.put(DbHelper.COL_EXPENSE_BUDGET_ID, budgetId); // Thêm budget_id
-        values.put(DbHelper.COL_UPDATED_AT, getCurrentDateTime());
-        int result = db.update(DbHelper.TABLE_EXPENSE, values, DbHelper.COL_EXPENSE_ID + " =?", new String[]{String.valueOf(expenseId)});
-        db.close();
-        checkIfExceededBudget(budgetId); // Kiểm tra lại sau khi cập nhật
-        return result;
-    }
-
-    // Sửa hàm getAllExpenses để lấy thêm budgetId
     public List<ExpenseModel> getAllExpenses() {
         List<ExpenseModel> expenses = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -83,12 +60,36 @@ public class ExpenseRepository {
             String name = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_NAME));
             int money = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_MONEY));
             String description = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_DESCRIPTION));
-            int category = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_CATEGORY));
             int status = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_STATUS));
             String createdAt = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_CREATED_AT));
             int budgetId = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_BUDGET_ID));
+            int userId = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_USER_ID));
 
-            expenses.add(new ExpenseModel(id, name, money, description, category, status, createdAt, budgetId));
+            expenses.add(new ExpenseModel(id, name, money, description, status, createdAt, budgetId, userId));
+        }
+        cursor.close();
+        db.close();
+        return expenses;
+    }
+    
+    // Add method to get expenses by userId
+    public List<ExpenseModel> getExpensesByUserId(int userId) {
+        List<ExpenseModel> expenses = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT * FROM " + DbHelper.TABLE_EXPENSE + " WHERE " + DbHelper.COL_EXPENSE_USER_ID + " = ? ORDER BY id DESC";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_ID));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_NAME));
+            int money = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_MONEY));
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_DESCRIPTION));
+            int status = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_STATUS));
+            String createdAt = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_CREATED_AT));
+            int budgetId = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_BUDGET_ID));
+            int expenseUserId = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_USER_ID));
+
+            expenses.add(new ExpenseModel(id, name, money, description, status, createdAt, budgetId, expenseUserId));
         }
         cursor.close();
         db.close();
@@ -100,14 +101,28 @@ public class ExpenseRepository {
         return db.delete(DbHelper.TABLE_EXPENSE, DbHelper.COL_EXPENSE_ID + "=?", new String[]{String.valueOf(id)});
     }
 
-    // Hàm mới: Lấy tổng chi tiêu của tháng theo một ngân sách cụ thể
-    public int getTotalMonthlyExpensesByBudget(int budgetId) {
+    public int updateExpense(int expenseId, String name, int money, String description, int status, int budgetId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DbHelper.COL_EXPENSE_NAME, name);
+        values.put(DbHelper.COL_EXPENSE_MONEY, money);
+        values.put(DbHelper.COL_EXPENSE_DESCRIPTION, description);
+        values.put(DbHelper.COL_EXPENSE_STATUS, status);
+        values.put(DbHelper.COL_EXPENSE_BUDGET_ID, budgetId);
+        values.put(DbHelper.COL_UPDATED_AT, getCurrentDateTime());
+        int result = db.update(DbHelper.TABLE_EXPENSE, values, DbHelper.COL_EXPENSE_ID + " =?", new String[]{String.valueOf(expenseId)});
+        db.close();
+        return result;
+    }
+
+    // Function to get total monthly expenses by budget and user
+    public int getTotalMonthlyExpensesByBudgetAndUser(int budgetId, int userId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         int total = 0;
         String query = "SELECT SUM(" + DbHelper.COL_EXPENSE_MONEY + ") as total FROM " +
                 DbHelper.TABLE_EXPENSE + " WHERE strftime('%Y-%m', " + DbHelper.COL_CREATED_AT +
-                ") = strftime('%Y-%m', 'now', 'localtime') AND " + DbHelper.COL_EXPENSE_BUDGET_ID + " = ?";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(budgetId)});
+                ") = strftime('%Y-%m', 'now', 'localtime') AND " + DbHelper.COL_EXPENSE_BUDGET_ID + " = ? AND " + DbHelper.COL_EXPENSE_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(budgetId), String.valueOf(userId)});
         if (cursor.moveToFirst()) {
             total = cursor.getInt(cursor.getColumnIndexOrThrow("total"));
         }
@@ -116,23 +131,40 @@ public class ExpenseRepository {
         return total;
     }
 
-    // Hàm mới: Lấy dữ liệu biểu đồ của tháng theo một ngân sách cụ thể
-    public ArrayList<PieEntry> getSpendingByCategoryForCurrentMonthByBudget(int budgetId) {
+    // Total monthly expenses for each budget of user
+    public ArrayList<PieEntry> getPieEntriesByBudget(int userId) {
         ArrayList<PieEntry> entries = new ArrayList<>();
-        String[] categoryNames = {"Food", "Travel", "Shopping", "", "Other"};
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT " + DbHelper.COL_EXPENSE_CATEGORY + ", SUM(" + DbHelper.COL_EXPENSE_MONEY + ") as total FROM " +
+        String query = "SELECT " + DbHelper.COL_EXPENSE_BUDGET_ID + ", SUM(" + DbHelper.COL_EXPENSE_MONEY + ") as total FROM " +
                 DbHelper.TABLE_EXPENSE + " WHERE strftime('%Y-%m', " + DbHelper.COL_CREATED_AT +
-                ") = strftime('%Y-%m', 'now', 'localtime') AND " + DbHelper.COL_EXPENSE_BUDGET_ID + " = ? GROUP BY " + DbHelper.COL_EXPENSE_CATEGORY;
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(budgetId)});
+                ") = strftime('%Y-%m', 'now', 'localtime') AND " + DbHelper.COL_EXPENSE_USER_ID + " = ? GROUP BY " + DbHelper.COL_EXPENSE_BUDGET_ID;
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
         while (cursor.moveToNext()) {
-            int categoryIndex = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_CATEGORY));
+            int budgetId = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_BUDGET_ID));
             float totalAmount = cursor.getFloat(cursor.getColumnIndexOrThrow("total"));
-            String categoryName = "Unknown";
-            if (categoryIndex >= 0 && categoryIndex < categoryNames.length) {
-                categoryName = categoryNames[categoryIndex];
-            }
-            entries.add(new PieEntry(totalAmount, categoryName));
+            // Get budget name from budgetId
+            BudgetRepository budgetRepo = new BudgetRepository(context);
+            BudgetModel budget = budgetRepo.getBudgetById(budgetId);
+            String budgetName = (budget != null) ? budget.getNameBudget() : "Budget " + budgetId;
+            entries.add(new PieEntry(totalAmount, budgetName));
+        }
+        cursor.close();
+        db.close();
+        return entries;
+    }
+
+    // Get expenses of a specific budget in current month
+    public ArrayList<PieEntry> getExpensesByBudgetForCurrentMonthByUser(int budgetId, int userId) {
+        ArrayList<PieEntry> entries = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT " + DbHelper.COL_EXPENSE_NAME + ", " + DbHelper.COL_EXPENSE_MONEY + " FROM " +
+                DbHelper.TABLE_EXPENSE + " WHERE strftime('%Y-%m', " + DbHelper.COL_CREATED_AT +
+                ") = strftime('%Y-%m', 'now', 'localtime') AND " + DbHelper.COL_EXPENSE_BUDGET_ID + " = ? AND " + DbHelper.COL_EXPENSE_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(budgetId), String.valueOf(userId)});
+        while (cursor.moveToNext()) {
+            String expenseName = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_NAME));
+            float amount = cursor.getFloat(cursor.getColumnIndexOrThrow(DbHelper.COL_EXPENSE_MONEY));
+            entries.add(new PieEntry(amount, expenseName));
         }
         cursor.close();
         db.close();
