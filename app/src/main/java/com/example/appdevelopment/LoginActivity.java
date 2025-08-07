@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_forgot_password, null);
 
         EditText edtUsername = dialogView.findViewById(R.id.edtUsernameForgot);
-        EditText edtOldPassword = dialogView.findViewById(R.id.edtOldPassword);
+        EditText edtPhone = dialogView.findViewById(R.id.edtPhone);
         EditText edtNewPassword = dialogView.findViewById(R.id.edtNewPassword);
         EditText edtConfirmPassword = dialogView.findViewById(R.id.edtConfirmPassword);
 
@@ -122,23 +122,18 @@ public class LoginActivity extends AppCompatActivity {
             Button btnSubmit = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             btnSubmit.setOnClickListener(view -> {
                 String username = edtUsername.getText().toString().trim();
-                String oldPassword = edtOldPassword.getText().toString().trim();
+                String phone = edtPhone.getText().toString().trim();
                 String newPassword = edtNewPassword.getText().toString().trim();
                 String confirmPassword = edtConfirmPassword.getText().toString().trim();
 
-                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(oldPassword)
+                if (TextUtils.isEmpty(username) || TextUtils.isEmpty(phone)
                         || TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(confirmPassword)) {
                     Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (!newPassword.equals(confirmPassword)) {
-                    Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                UserModel user = repository.getUserByUsername(username);
-                if (user != null && user.getPassword().equals(oldPassword)) {
+                UserModel user = repository.getUserByUsernameAndPhone(username, phone);
+                if (user != null && user.getId() > 0) {
                     boolean updated = repository.updatePassword(user.getId(), newPassword);
                     if (updated) {
                         Toast.makeText(this, "Password changed successfully!", Toast.LENGTH_SHORT).show();
@@ -151,18 +146,19 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("created_at", user.getCreatedAt());
                         editor.apply();
 
+
                         Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
                     } else {
                         Toast.makeText(this, "Failed to update password", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(this, "Old password is incorrect", Toast.LENGTH_SHORT).show();
-                }
+                        Toast.makeText(this, "Username or phone is incorrect", Toast.LENGTH_SHORT).show();
+                    }
             });
         });
-
         dialog.show();
     }
 

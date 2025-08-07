@@ -84,17 +84,20 @@ public class UserRepository extends DbHelper{
         return rows > 0;
     }
 
-    public UserModel getUserByUsername(String username) {
+
+    public UserModel getUserByUsernameAndPhone(String username, String phone) {
         Cursor cursor = this.getReadableDatabase().rawQuery(
-                "SELECT * FROM " + DbHelper.TABLE_USERS + " WHERE username = ?",
-                new String[]{username}
+                "SELECT * FROM " + DbHelper.TABLE_USERS + " WHERE username = ? AND phone = ?",
+                new String[]{username, phone}
         );
+
         if (cursor != null && cursor.moveToFirst()) {
             UserModel user = new UserModel();
             user.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
             user.setUsername(cursor.getString(cursor.getColumnIndexOrThrow("username")));
             user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow("password")));
             user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow("email")));
+            user.setPhone(cursor.getString(cursor.getColumnIndexOrThrow("phone")));
             user.setRole(cursor.getInt(cursor.getColumnIndexOrThrow("role")));
             user.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow("created_at")));
             cursor.close();
@@ -102,6 +105,4 @@ public class UserRepository extends DbHelper{
         }
         return null;
     }
-
-
 }
