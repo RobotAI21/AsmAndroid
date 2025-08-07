@@ -1,5 +1,6 @@
 package com.example.appdevelopment;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,20 +14,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.appdevelopment.database.DbHelper;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
+ * Use the {@link SettingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProfileFragment extends Fragment {
+public class SettingFragment extends Fragment {
     private EditText edtEmail, edtNewPassword;
     private Button btnVerifyEmail, btnChangePassword;
     private LinearLayout passwordSection;
     private DbHelper dbHelper;
+    private TextView tvUsername, tvEmail, tvCreatedDate;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,7 +41,7 @@ public class ProfileFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ProfileFragment() {
+    public SettingFragment() {
         // Required empty public constructor
     }
 
@@ -50,8 +54,8 @@ public class ProfileFragment extends Fragment {
      * @return A new instance of fragment SettingFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
+    public static SettingFragment newInstance(String param1, String param2) {
+        SettingFragment fragment = new SettingFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -83,6 +87,12 @@ public class ProfileFragment extends Fragment {
         btnVerifyEmail = view.findViewById(R.id.btnVerifyEmail);
         btnChangePassword = view.findViewById(R.id.btnChangePassword);
         passwordSection = view.findViewById(R.id.passwordSection);
+        tvUsername = view.findViewById(R.id.tvUsername);
+        tvEmail = view.findViewById(R.id.tvEmail);
+        tvCreatedDate = view.findViewById(R.id.tvCreatedDate);
+
+
+
         dbHelper = new DbHelper(requireContext());
 
         passwordSection.setVisibility(View.GONE);
@@ -124,5 +134,7 @@ public class ProfileFragment extends Fragment {
             }
 
         });
+
+
     }
 }

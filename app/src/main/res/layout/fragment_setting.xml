@@ -22,7 +22,47 @@
             android:layout_marginBottom="24dp"
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.05"
-            android:text="Forgot Password"
+            android:text="Profile"
+            android:textColor="#317256"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- Thông tin tài khoản -->
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username: "
+            android:textSize="16sp"
+            android:textColor="#1B4332"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Email: "
+            android:textColor="#1B4332"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvCreatedDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Created Date: "
+            android:textSize="16sp"
+            android:textColor="#1B4332"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.05"
+            android:text="Change Password"
             android:textColor="#317256"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -83,5 +123,16 @@
                 android:backgroundTint="#D4AF37"
                 android:textColor="#FFFFFF"/>
         </LinearLayout>
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Logout"
+            android:layout_gravity="center_horizontal"
+            android:backgroundTint="#B00020"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:padding="14dp" />
     </LinearLayout>
 </FrameLayout>

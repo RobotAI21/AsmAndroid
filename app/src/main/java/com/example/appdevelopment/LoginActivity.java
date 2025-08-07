@@ -1,6 +1,7 @@
 package com.example.appdevelopment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -72,6 +73,11 @@ public class LoginActivity extends AppCompatActivity {
                 UserModel infoAccount = repository.getInfoAccountByUsername(username ,password);
                 assert infoAccount != null;
                 if(infoAccount.getUsername() != null && infoAccount.getId()>0){
+                    SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("userId", infoAccount.getId());
+                    editor.apply();
+
                     //login successfully
                     Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                     Bundle bundle = new Bundle();
