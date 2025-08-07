@@ -18,7 +18,7 @@
             android:text="Sign Up"
             android:textSize="28sp"
             android:textColor="#EB6E32"
-            android:textStyle="bold"
+            android:textStyle="bold|italic"
             android:layout_marginTop="16dp"/>
 
         <ImageView
@@ -80,6 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:layout_weight="1"
+                android:background="@drawable/button_bg"
                 android:text="Register"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"
@@ -90,12 +91,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Already have account?"
+            android:text="Already have account? Login"
             android:layout_gravity="center"
             android:textColor="#444"
             android:textSize="16sp"
-            android:textStyle="bold|italic"
-            android:layout_marginTop="24dp"
+            android:textStyle="bold"
+            android:layout_marginTop="14dp"
             android:id="@+id/tvLogin"/>
     </LinearLayout>
 </ScrollView>

@@ -15,7 +15,7 @@
         <TextView
             android:text="Login"
             android:textSize="28sp"
-            android:textStyle="bold"
+            android:textStyle="bold|italic"
             android:textColor="#3E4A89"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="16dp"
@@ -102,16 +102,17 @@
             android:id="@+id/tvRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have account"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="Don't have account? Register"
             android:layout_marginBottom="10dp"/>
 
         <TextView
             android:id="@+id/tvForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Forgot Password?"
+            android:text="Forgot Password"
             android:textColor="#3E4A89"
-            android:textStyle="bold|italic"
             android:layout_marginBottom="10dp"/>
 
 

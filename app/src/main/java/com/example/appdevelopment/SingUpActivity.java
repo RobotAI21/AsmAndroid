@@ -54,6 +54,16 @@ public class SingUpActivity extends AppCompatActivity {
         edtPhone = findViewById(R.id.edtPhone);
         tvLogin = findViewById(R.id.tvLogin);
         signupAccount();
+        backLogin();
+    }
+    private void backLogin(){
+        tvLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SingUpActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
     }
     private void signupAccount(){
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -86,41 +96,6 @@ public class SingUpActivity extends AppCompatActivity {
                     Toast.makeText(SingUpActivity.this, "Sing up successfully", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SingUpActivity.this, LoginActivity.class);
                     startActivity(intent);
-                }
-            }
-        });
-    }
-    private void signupV1(){
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = edtUsername.getText().toString().trim();
-                String password = edtPassword.getText().toString().trim();
-                if(TextUtils.isEmpty(username)){
-                    edtUsername.setError("User name can't empty");
-                    return;
-                }
-                if (TextUtils.isEmpty(password)){
-                    edtPassword.setError("Password can't empty");
-                    return;
-                }
-                // save data user to file
-                FileOutputStream fileOutput = null;
-                try{
-                    username = username += "|";
-                    fileOutput = openFileOutput("account.txt", Context.MODE_APPEND); //Mode append ghi tiep sau file
-                    fileOutput.write(username.getBytes(StandardCharsets.UTF_8));
-                    fileOutput.write(password.getBytes(StandardCharsets.UTF_8));
-                    fileOutput.write('\n');
-                    fileOutput.close();
-                    edtUsername.setText("");
-                    edtPassword.setText("");
-                    Toast.makeText(SingUpActivity.this, "Sing up successfully", Toast.LENGTH_SHORT).show();
-                    // quay ve dang nhap
-                    Intent intent = new Intent(SingUpActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                } catch (Exception e) {
-                    throw new RuntimeException();
                 }
             }
         });
