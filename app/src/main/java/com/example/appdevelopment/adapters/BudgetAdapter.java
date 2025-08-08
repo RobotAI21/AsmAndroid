@@ -44,7 +44,7 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         String remainingMoneyFormatted = formatter.format(budget.getRemainingMoney());
         String totalMoneyFormatted = formatter.format(budget.getMoneyBudget());
-        String moneyText = "Còn lại: " + remainingMoneyFormatted + " / " + totalMoneyFormatted;
+        String moneyText = "Remaining: " + remainingMoneyFormatted + " / " + totalMoneyFormatted;
         holder.tvMoney.setText(moneyText);
 
         holder.btnEdit.setOnClickListener(v -> {
