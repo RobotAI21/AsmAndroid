@@ -91,6 +91,20 @@ public class EditExpenseActivity extends AppCompatActivity {
         int rows = repository.updateExpense(expenseId, name, money, description, 1, budgetId);
 
         if (rows > 0) {
+            String initialBudgetName = "";
+            for (BudgetModel budget : budgetList) {
+                if (budget.getId() == initialBudgetId) {
+                    initialBudgetName = budget.getNameBudget();
+                    break;
+                }
+            }
+            if (!initialBudgetName.isEmpty()) {
+                Notification.resetBudgetNotifications(this, initialBudgetName);
+            }
+            if (initialBudgetId != budgetId) {
+                Notification.resetBudgetNotifications(this, selectedBudget.getNameBudget());
+            }
+
             // Kiểm tra và thông báo nếu vượt quá ngân sách
             checkBudgetLimitAndNotify(selectedBudget, money);
             Toast.makeText(this, "Expense updated", Toast.LENGTH_SHORT).show();
@@ -110,7 +124,7 @@ public class EditExpenseActivity extends AppCompatActivity {
         
         if (remainingBudget <= 0) {
             // Vượt quá ngân sách
-            Notification.showBudgetExceededNotification(
+            Notification.showBudgetExceeded(
                 this,
                 budget.getNameBudget(),
                 totalExpenses,
@@ -118,7 +132,7 @@ public class EditExpenseActivity extends AppCompatActivity {
             );
         } else if (remainingBudget <= budgetLimit * 0.1) {
             // Cảnh báo ngân sách (còn 10%)
-            Notification.showBudgetWarningNotification(
+            Notification.showBudgetWarning(
                 this,
                 budget.getNameBudget(),
                 remainingBudget

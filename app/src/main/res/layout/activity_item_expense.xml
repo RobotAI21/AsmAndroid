@@ -67,7 +67,7 @@
             android:id="@+id/btnDeleteExpense"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🗑Delete"
+            android:text="Delete"
             android:textColor="#FFFFFF"
             android:backgroundTint="#D32F2F"
             android:background="@drawable/btn_delete_selector"/>

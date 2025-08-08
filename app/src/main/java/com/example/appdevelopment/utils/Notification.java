@@ -3,6 +3,7 @@ package com.example.appdevelopment.utils;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
@@ -15,23 +16,22 @@ import com.example.appdevelopment.R;
 public class Notification {
     private static final String CHANNEL_ID = "budget_alerts";
 
-    public static void showBudgetWarningNotification(Context context, String title, String message) {
+    // Gửi thông báo cảnh báo hoặc vượt ngân sách
+    private static void showNotification(Context context, String title, String message) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Tạo channel nếu cần (Android 8+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Budget Alerts";
-            String description = "Alerts for budget limits";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Budget Alerts",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Alerts for budget limits");
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
             }
         }
 
-        // Build notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(title)
@@ -39,7 +39,6 @@ public class Notification {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true);
 
-        // Android 13+ cần kiểm tra quyền
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -47,39 +46,39 @@ public class Notification {
             }
         }
 
-        // Show notification
-        notificationManager.notify(1001, builder.build());
+        NotificationManagerCompat.from(context).notify((int) System.currentTimeMillis(), builder.build());
     }
 
-    // Thông báo khi vượt quá ngân sách
-    public static void showBudgetExceededNotification(Context context, String budgetName, int spentAmount, int budgetLimit) {
+    // Cảnh báo khi còn ít ngân sách
+    public static void showBudgetWarning(Context context, String budgetName, int remainingAmount) {
         String notifyKey = "warning_" + budgetName;
-        if (hasNotified(context, notifyKey)) {
-            return; // Đã thông báo rồi thì không gửi lại
-        }
-        String title = "Chi tiêu vượt ngân sách!";
-        String message = "Bạn đã chi tiêu " + formatCurrency(spentAmount) + " vượt quá ngân sách " + formatCurrency(budgetLimit) + ".";
-        
-        showBudgetWarningNotification(context, title, message);
+        if (hasNotified(context, notifyKey)) return;
+
+        String title = "Budget Warning!";
+        String message = "You only have" + formatCurrency(remainingAmount) + " in Budget \"" + budgetName + "\".";
+        showNotification(context, title, message);
         markAsNotified(context, notifyKey);
     }
 
-    // Thông báo cảnh báo ngân sách
-    public static void showBudgetWarningNotification(Context context, String budgetName, int remainingAmount) {
-        String notifyKey = "warning_" + budgetName;
-        if (hasNotified(context, notifyKey)) {
-            return; // Đã cảnh báo rồi thì không gửi lại
-        }
-        String title = "Cảnh báo ngân sách!";
-        String message = "Bạn chỉ còn " + formatCurrency(remainingAmount) + " trong ngân sách " + budgetName + ".";
-        
-        showBudgetWarningNotification(context, title, message);
+    // Cảnh báo khi vượt ngân sách
+    public static void showBudgetExceeded(Context context, String budgetName, int spentAmount, int budgetLimit) {
+        String notifyKey = "exceeded_" + budgetName;
+        if (hasNotified(context, notifyKey)) return;
+
+        String title = "Expense Exceeded!";
+        String message = "You had spent" + formatCurrency(spentAmount)
+                + ", over budget \"" + budgetName + "\" (" + formatCurrency(budgetLimit) + ").";
+        showNotification(context, title, message);
         markAsNotified(context, notifyKey);
     }
 
-    // Format tiền tệ theo định dạng Việt Nam
-    private static String formatCurrency(int amount) {
-        return String.format("%,d₫", amount);
+
+    public static void resetBudgetNotifications(Context context, String budgetName) {
+        SharedPreferences prefs = context.getSharedPreferences("BudgetNotifications", Context.MODE_PRIVATE);
+        prefs.edit()
+                .remove("warning_" + budgetName)
+                .remove("exceeded_" + budgetName)
+                .apply();
     }
 
     private static boolean hasNotified(Context context, String key) {
@@ -94,4 +93,9 @@ public class Notification {
                 .apply();
     }
 
+    private static String formatCurrency(int amount) {
+        return String.format("%,d₫", amount);
+    }
 }
+
+

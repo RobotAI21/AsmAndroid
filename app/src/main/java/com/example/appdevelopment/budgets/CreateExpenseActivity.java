@@ -110,15 +110,16 @@ public class CreateExpenseActivity extends AppCompatActivity {
         
         if (remainingBudget <= 0) {
             // Vượt quá ngân sách
-            Notification.showBudgetExceededNotification(
+            Notification.showBudgetExceeded(
                 this,
                 budget.getNameBudget(),
                 totalExpenses,
                 budgetLimit
             );
+
         } else if (remainingBudget <= budgetLimit * 0.1) {
             // Cảnh báo ngân sách (còn 10%)
-            Notification.showBudgetWarningNotification(
+            Notification.showBudgetWarning(
                 this,
                 budget.getNameBudget(),
                 remainingBudget

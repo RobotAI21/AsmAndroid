@@ -62,6 +62,14 @@
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:layout_marginTop="4dp" />
+
+                <Button
+                    android:id="@+id/stickyButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add Expense"
+                    android:layout_gravity="right"
+                    android:layout_margin="16dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -92,10 +100,12 @@
             android:textColor="#317256"
             android:layout_marginBottom="8dp"/>
 
+
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pie_chart"
             android:layout_width="match_parent"
             android:layout_height="350dp" />
+
 
 
     </LinearLayout>

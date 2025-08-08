@@ -1,5 +1,6 @@
 package com.example.appdevelopment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,11 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.appdevelopment.budgets.CreateExpenseActivity;
 import com.example.appdevelopment.database.BudgetModel;
 import com.example.appdevelopment.database.BudgetRepository;
 import com.example.appdevelopment.database.ExpenseRepository;
@@ -34,6 +40,7 @@ public class OverviewFragment extends Fragment {
     private ExpenseRepository expenseRepository;
     private BudgetRepository budgetRepository;
     private List<BudgetModel> budgetList;
+    private Button btnAddExpense;
 
     @Nullable
     @Override
@@ -50,7 +57,24 @@ public class OverviewFragment extends Fragment {
         tvTotalSpending = view.findViewById(R.id.tv_total_spending);
         tvRemainingBudget = view.findViewById(R.id.tv_remaining_budget);
         spinnerBudgetSelection = view.findViewById(R.id.spinner_budget_overview);
-        
+        btnAddExpense = view.findViewById(R.id.stickyButton);
+
+        btnAddExpense.setOnClickListener(v -> {
+            MainMenuActivity activity = (MainMenuActivity) getActivity();
+            int userId = (activity != null) ? activity.getCurrentUserId() : -1;
+
+            // Kiểm tra xem userId có hợp lệ không trước khi chuyển
+            if (userId != -1) {
+                Intent intent = new Intent(getActivity(), CreateExpenseActivity.class);
+                // Đặt userId vào intent với một "key" là "USER_ID"
+                intent.putExtra("USER_ID", userId);
+                startActivity(intent);
+            } else {
+                // Thông báo lỗi nếu không tìm thấy user id
+                Toast.makeText(getContext(), "User not found, please try again!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         setupPieChart();
         setupBudgetSpinner();
     }
@@ -139,7 +163,7 @@ public class OverviewFragment extends Fragment {
     private void checkBudgetLimitAndNotify(BudgetModel budget, int spending, int remainingBudget) {
         if (remainingBudget <= 0) {
             // Vượt quá ngân sách
-            Notification.showBudgetExceededNotification(
+            Notification.showBudgetExceeded(
                 getContext(),
                 budget.getNameBudget(),
                 spending,
@@ -147,7 +171,7 @@ public class OverviewFragment extends Fragment {
             );
         } else if (remainingBudget <= budget.getMoneyBudget() * 0.1) {
             // Cảnh báo ngân sách (còn 10%)
-            Notification.showBudgetWarningNotification(
+            Notification.showBudgetWarning(
                 getContext(),
                 budget.getNameBudget(),
                 remainingBudget
