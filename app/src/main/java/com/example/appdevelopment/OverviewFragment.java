@@ -30,8 +30,10 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class OverviewFragment extends Fragment {
     private PieChart pieChart;
@@ -41,6 +43,7 @@ public class OverviewFragment extends Fragment {
     private BudgetRepository budgetRepository;
     private List<BudgetModel> budgetList;
     private Button btnAddExpense;
+
 
     @Nullable
     @Override
@@ -81,6 +84,12 @@ public class OverviewFragment extends Fragment {
 
     @Override
     public void onResume() {
+        if (spinnerBudgetSelection.getAdapter() != null && !spinnerBudgetSelection.getAdapter().isEmpty()) {
+            BudgetModel selectedBudget = (BudgetModel) spinnerBudgetSelection.getSelectedItem();
+            if (selectedBudget != null) {
+                loadDataForSelectedBudget(selectedBudget);
+            }
+        }
         super.onResume();
         setupBudgetSpinner();
     }
@@ -161,20 +170,23 @@ public class OverviewFragment extends Fragment {
     }
 
     private void checkBudgetLimitAndNotify(BudgetModel budget, int spending, int remainingBudget) {
+        if (getContext() == null) return; // Đảm bảo an toàn
+
+
         if (remainingBudget <= 0) {
-            // Vượt quá ngân sách
             Notification.showBudgetExceeded(
-                getContext(),
-                budget.getNameBudget(),
-                spending,
-                budget.getMoneyBudget()
+                    getContext(),
+                    budget.getNameBudget(),
+                    spending,
+                    budget.getMoneyBudget()
             );
-        } else if (remainingBudget <= budget.getMoneyBudget() * 0.1) {
-            // Cảnh báo ngân sách (còn 10%)
+        }
+
+        else if (remainingBudget <= budget.getMoneyBudget() * 0.1) {
             Notification.showBudgetWarning(
-                getContext(),
-                budget.getNameBudget(),
-                remainingBudget
+                    getContext(),
+                    budget.getNameBudget(),
+                    remainingBudget
             );
         }
     }
