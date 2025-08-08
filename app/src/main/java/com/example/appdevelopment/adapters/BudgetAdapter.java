@@ -17,7 +17,9 @@ import com.example.appdevelopment.R;
 import com.example.appdevelopment.database.BudgetModel;
 import com.example.appdevelopment.database.BudgetRepository;
 
+import java.text.NumberFormat; // SỬA: Thêm để định dạng số
 import java.util.List;
+import java.util.Locale; // SỬA: Thêm để định dạng số
 
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder> {
     private List<BudgetModel> budgets;
@@ -36,50 +38,49 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
     public void onBindViewHolder(@NonNull BudgetAdapter.BudgetViewHolder holder, int position) {
         BudgetModel budget = budgets.get(position);
         holder.tvName.setText(budget.getNameBudget());
-        holder.tvMoney.setText(String.valueOf(budget.getMoneyBudget()));
         holder.tvDescription.setText(budget.getDescription());
 
-        holder.btnEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = holder.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    // Check if position is valid
-                    Context context = v.getContext();
-                    Intent intent = new Intent(context, EditBudgetActivity.class);
-                    intent.putExtra("BUDGET_ID", budget.getId());
-                    intent.putExtra("BUDGET_NAME", budget.getNameBudget());
-                    intent.putExtra("BUDGET_MONEY", budget.getMoneyBudget());
-                    intent.putExtra("BUDGET_DESCRIPTION", budget.getDescription());
-                    context.startActivity(intent);
-                }
+        // SỬA: Định dạng và hiển thị số tiền còn lại / tổng số tiền
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        String remainingMoneyFormatted = formatter.format(budget.getRemainingMoney());
+        String totalMoneyFormatted = formatter.format(budget.getMoneyBudget());
+        String moneyText = "Còn lại: " + remainingMoneyFormatted + " / " + totalMoneyFormatted;
+        holder.tvMoney.setText(moneyText);
 
-            }
-        });
-        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = holder.getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    BudgetRepository repository = new BudgetRepository(v.getContext());
-                    int rows = repository.deleteBudget(budget.getId());
-                    if (rows > 0) {
-                        budgets.remove(position);
-                        notifyItemRemoved(position);
-                        Toast.makeText(v.getContext(), "Delete budget successfully", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(v.getContext(), "Delete budget failed", Toast.LENGTH_SHORT).show();
-                    }
-                }
+        holder.btnEdit.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, EditBudgetActivity.class);
+                intent.putExtra("BUDGET_ID", budget.getId());
+                intent.putExtra("BUDGET_NAME", budget.getNameBudget());
+                intent.putExtra("BUDGET_MONEY", budget.getMoneyBudget());
+                intent.putExtra("BUDGET_DESCRIPTION", budget.getDescription());
+                context.startActivity(intent);
             }
         });
 
+        holder.btnDelete.setOnClickListener(v -> {
+            int pos = holder.getAdapterPosition();
+            if (pos != RecyclerView.NO_POSITION) {
+                BudgetRepository repository = new BudgetRepository(v.getContext());
+                int rows = repository.deleteBudget(budget.getId());
+                if (rows > 0) {
+                    budgets.remove(pos);
+                    notifyItemRemoved(pos);
+                    Toast.makeText(v.getContext(), "Delete budget successfully", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(v.getContext(), "Delete budget failed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return budgets.size();
     }
+
     public static class BudgetViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvMoney, tvDescription;
         Button btnEdit, btnDelete;

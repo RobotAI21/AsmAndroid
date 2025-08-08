@@ -57,7 +57,7 @@ public class EditBudgetActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish(); // Close the current activity and return to the previous one
+                finish(); // Close the current activity and return to tphe previous one
             }
         });
     }
