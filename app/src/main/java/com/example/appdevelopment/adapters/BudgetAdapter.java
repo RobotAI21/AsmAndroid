@@ -1,5 +1,6 @@
 package com.example.appdevelopment.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -89,18 +90,61 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         holder.btnDelete.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
-                BudgetRepository repository = new BudgetRepository(v.getContext());
-                int rows = repository.deleteBudget(budget.getId());
-                if (rows > 0) {
-                    // Xóa item khỏi danh sách và cập nhật giao diện
-                    budgets.remove(pos);
-                    notifyItemRemoved(pos);
-                    Toast.makeText(v.getContext(), "Delete budget successfully", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(v.getContext(), "Delete budget failed", Toast.LENGTH_SHORT).show();
-                }
+                showDeleteConfirmationDialog(v.getContext(), budget, pos);
             }
         });
+    }
+
+    /**
+     * Phương thức hiển thị dialog xác nhận xóa ngân sách
+     * @param context Context của ứng dụng
+     * @param budget Ngân sách cần xóa
+     * @param position Vị trí của ngân sách trong danh sách
+     */
+    private void showDeleteConfirmationDialog(Context context, BudgetModel budget, int position) {
+        BudgetRepository repository = new BudgetRepository(context);
+        
+        // Kiểm tra xem ngân sách có chứa expense nào không
+        if (repository.hasExpenses(budget.getId())) {
+            // Nếu có expense, hiển thị dialog cảnh báo
+            int expenseCount = repository.getExpenseCount(budget.getId());
+            String message = "Ngân sách '" + budget.getNameBudget() + "' có " + expenseCount + " chi tiêu.\n" +
+                           "Việc xóa ngân sách này sẽ xóa tất cả chi tiêu liên quan.\n" +
+                           "Bạn có chắc chắn muốn xóa không?";
+            
+            new AlertDialog.Builder(context)
+                    .setTitle("Xác nhận xóa ngân sách")
+                    .setMessage(message)
+                    .setPositiveButton("Xóa", (dialog, which) -> {
+                        deleteBudget(context, budget, position);
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        } else {
+            // Nếu không có expense, xóa trực tiếp
+            deleteBudget(context, budget, position);
+        }
+    }
+
+    /**
+     * Phương thức thực hiện xóa ngân sách
+     * @param context Context của ứng dụng
+     * @param budget Ngân sách cần xóa
+     * @param position Vị trí của ngân sách trong danh sách
+     */
+    private void deleteBudget(Context context, BudgetModel budget, int position) {
+        BudgetRepository repository = new BudgetRepository(context);
+        int rows = repository.deleteBudget(budget.getId());
+        
+        if (rows > 0) {
+            // Xóa item khỏi danh sách và cập nhật giao diện
+            budgets.remove(position);
+            notifyItemRemoved(position);
+            Toast.makeText(context, "Xóa ngân sách thành công", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Xóa ngân sách thất bại", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

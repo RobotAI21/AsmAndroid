@@ -58,7 +58,7 @@
             android:id="@+id/btnDeleteBudget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🗑Delete"
+            android:text="Delete"
             android:textColor="#FFFFFF"
             android:background="@drawable/btn_delete_selector"/>
     </LinearLayout>

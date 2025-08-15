@@ -124,15 +124,77 @@ public class BudgetRepository {
     }
 
     /**
+     * Phương thức kiểm tra xem ngân sách có chứa expense nào không
+     * @param budgetId ID của ngân sách cần kiểm tra
+     * @return true nếu có expense, false nếu không có
+     */
+    public boolean hasExpenses(int budgetId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + DbHelper.TABLE_EXPENSE + " WHERE " + DbHelper.COL_EXPENSE_BUDGET_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(budgetId)});
+        
+        boolean hasExpenses = false;
+        if (cursor.moveToFirst()) {
+            int count = cursor.getInt(0);
+            hasExpenses = count > 0;
+        }
+        
+        cursor.close();
+        db.close();
+        return hasExpenses;
+    }
+
+    /**
+     * Phương thức đếm số lượng expense của một ngân sách
+     * @param budgetId ID của ngân sách
+     * @return Số lượng expense
+     */
+    public int getExpenseCount(int budgetId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + DbHelper.TABLE_EXPENSE + " WHERE " + DbHelper.COL_EXPENSE_BUDGET_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(budgetId)});
+        
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    /**
      * Phương thức xóa ngân sách theo ID
+     * Đồng thời xóa tất cả expense liên quan đến ngân sách này
      * @param id ID của ngân sách cần xóa
      * @return Số dòng bị ảnh hưởng
      */
     public int deleteBudget(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        int rows = db.delete(DbHelper.TABLE_BUDGET, DbHelper.COL_BUDGET_ID + " =?", new String[]{String.valueOf(id)});
-        db.close();
-        return rows;
+        
+        // Bắt đầu transaction để đảm bảo tính toàn vẹn dữ liệu
+        db.beginTransaction();
+        try {
+            // Xóa tất cả expense liên quan đến budget này trước
+            int expenseRows = db.delete(DbHelper.TABLE_EXPENSE, 
+                DbHelper.COL_EXPENSE_BUDGET_ID + " =?", 
+                new String[]{String.valueOf(id)});
+            
+            // Sau đó xóa budget
+            int budgetRows = db.delete(DbHelper.TABLE_BUDGET, 
+                DbHelper.COL_BUDGET_ID + " =?", 
+                new String[]{String.valueOf(id)});
+            
+            // Commit transaction nếu thành công
+            db.setTransactionSuccessful();
+            
+            // Trả về tổng số dòng bị ảnh hưởng
+            return budgetRows;
+        } finally {
+            // Kết thúc transaction
+            db.endTransaction();
+        }
     }
 
     /**
