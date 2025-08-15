@@ -24,40 +24,36 @@ import android.widget.Toast;
 import com.example.appdevelopment.database.DbHelper;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment quản lý hồ sơ người dùng
+ * Cho phép xem thông tin cá nhân, thay đổi mật khẩu và đăng xuất
  */
 public class ProfileFragment extends Fragment {
+    // Khai báo các thành phần UI
     private EditText edtEmail, edtNewPassword;
     private Button btnVerifyEmail, btnChangePassword, btnLogout;
     private LinearLayout passwordSection;
     private DbHelper dbHelper;
     private TextView tvUsername, tvEmail, tvCreatedDate;
 
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // Tham số cho Fragment (không sử dụng)
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
+    /**
+     * Constructor mặc định của Fragment
+     */
     public ProfileFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SettingFragment.
+     * Phương thức factory để tạo instance mới của Fragment
+     * @param param1 Tham số 1 (không sử dụng)
+     * @param param2 Tham số 2 (không sử dụng)
+     * @return Instance mới của ProfileFragment
      */
-    // TODO: Rename and change types and number of parameters
     public static ProfileFragment newInstance(String param1, String param2) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
@@ -67,6 +63,11 @@ public class ProfileFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Phương thức khởi tạo Fragment
+     * Lấy các tham số từ Bundle
+     * @param savedInstanceState Bundle chứa trạng thái trước đó
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,16 +77,31 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * Phương thức tạo view cho Fragment
+     * @param inflater LayoutInflater để inflate layout
+     * @param container ViewGroup chứa Fragment
+     * @param savedInstanceState Bundle chứa trạng thái trước đó
+     * @return View đã được tạo
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // Inflate layout cho Fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
+    /**
+     * Phương thức được gọi sau khi view được tạo
+     * Thiết lập giao diện và xử lý các sự kiện
+     * @param view View đã được tạo
+     * @param savedInstanceState Bundle chứa trạng thái trước đó
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        
+        // Khởi tạo các thành phần UI
         edtEmail = view.findViewById(R.id.edtEmail);
         edtNewPassword = view.findViewById(R.id.edtNewPassword);
         btnVerifyEmail = view.findViewById(R.id.btnVerifyEmail);
@@ -96,12 +112,14 @@ public class ProfileFragment extends Fragment {
         tvCreatedDate = view.findViewById(R.id.tvCreatedDate);
         btnLogout = view.findViewById(R.id.btnLogout);
 
-
+        // Khởi tạo database helper
         dbHelper = new DbHelper(requireContext());
+        
+        // Lấy thông tin người dùng từ SharedPreferences
         SharedPreferences prefs = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         int userId = prefs.getInt("userId", -1);
 
-
+        // Load thông tin người dùng và hiển thị lên giao diện
         if (userId != -1) {
             Cursor cursor = dbHelper.getUserInfoById(userId);
             if (cursor.moveToFirst()) {
@@ -116,18 +134,20 @@ public class ProfileFragment extends Fragment {
             cursor.close();
         }
 
-
-
+        // Ẩn phần thay đổi mật khẩu ban đầu
         passwordSection.setVisibility(View.GONE);
 
+        // Xử lý sự kiện xác thực email
         btnVerifyEmail.setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
 
+            // Kiểm tra tính hợp lệ của email
             if (email.isEmpty()) {
                 edtEmail.setError("Please enter email");
                 return;
             }
 
+            // Kiểm tra email có tồn tại trong cơ sở dữ liệu không
             if (dbHelper.isEmailExists(email)) {
                 Toast.makeText(getContext(), "Email verified. Please enter new password.", Toast.LENGTH_SHORT).show();
                 passwordSection.setVisibility(View.VISIBLE);
@@ -136,15 +156,18 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        // Xử lý sự kiện thay đổi mật khẩu
         btnChangePassword.setOnClickListener(v -> {
             String email = edtEmail.getText().toString().trim();
             String newPassword = edtNewPassword.getText().toString().trim();
 
+            // Kiểm tra độ dài mật khẩu mới
             if (newPassword.length() < 6) {
                 edtNewPassword.setError("Password must be at least 6 characters");
                 return;
             }
 
+            // Cập nhật mật khẩu trong cơ sở dữ liệu
             if (dbHelper.updatePassword(email, newPassword)) {
                 Toast.makeText(getContext(), "Password updated successfully", Toast.LENGTH_LONG).show();
                 requireActivity().getSupportFragmentManager().popBackStack();
@@ -155,21 +178,21 @@ public class ProfileFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(), "Failed to update password", Toast.LENGTH_SHORT).show();
             }
-
         });
 
+        // Xử lý sự kiện đăng xuất
         btnLogout.setOnClickListener(v -> {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.clear();
-                editor.apply();
+            // Xóa thông tin người dùng khỏi SharedPreferences
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.clear();
+            editor.apply();
 
-                Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
 
-                // Quay về màn hình LoginActivity
-                Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Xóa back stack
-                startActivity(intent);
+            // Chuyển về màn hình đăng nhập và xóa back stack
+            Intent intent = new Intent(requireActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
-
     }
 }

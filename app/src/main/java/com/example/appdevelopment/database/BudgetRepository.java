@@ -11,26 +11,46 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Repository class để quản lý các thao tác với bảng budget trong cơ sở dữ liệu
+ * Cung cấp các phương thức CRUD cho ngân sách
+ */
 public class BudgetRepository {
 
     private DbHelper dbHelper;
 
+    /**
+     * Constructor của BudgetRepository
+     * @param context Context của ứng dụng
+     */
     public BudgetRepository(Context context) {
         this.dbHelper = new DbHelper(context);
     }
 
+    /**
+     * Phương thức lấy thời gian hiện tại theo định dạng chuẩn
+     * @return Chuỗi thời gian hiện tại
+     */
     private String getCurrentDateTime() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return sdf.format(new Date());
     }
 
+    /**
+     * Phương thức lưu ngân sách mới vào cơ sở dữ liệu
+     * @param name Tên ngân sách
+     * @param money Số tiền ngân sách
+     * @param description Mô tả ngân sách
+     * @param userId ID của người dùng sở hữu ngân sách
+     * @return ID của ngân sách mới được tạo, -1 nếu thất bại
+     */
     public long saveBudget(String name, int money, String description, int userId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DbHelper.COL_BUDGET_NAME, name);
         values.put(DbHelper.COL_BUDGET_MONEY, money);
         values.put(DbHelper.COL_BUDGET_DESCRIPTION, description);
-        values.put(DbHelper.COL_BUDGET_USER_ID, userId); // Add userId
+        values.put(DbHelper.COL_BUDGET_USER_ID, userId);
         values.put(DbHelper.COL_CREATED_AT, getCurrentDateTime());
         values.put(DbHelper.COL_UPDATED_AT, getCurrentDateTime());
         long result = db.insert(DbHelper.TABLE_BUDGET, null, values);
@@ -38,13 +58,21 @@ public class BudgetRepository {
         return result;
     }
     
-    // Overload method cũ để tương thích ngược
+    /**
+     * Phương thức lưu ngân sách mới (overload để tương thích ngược)
+     * @param name Tên ngân sách
+     * @param money Số tiền ngân sách
+     * @param description Mô tả ngân sách
+     * @return ID của ngân sách mới được tạo, -1 nếu thất bại
+     */
     public long saveBudget(String name, int money, String description) {
         return saveBudget(name, money, description, 1); // Default userId = 1
     }
 
-    // Trong file: database/BudgetRepository.java
-
+    /**
+     * Phương thức lấy tất cả ngân sách từ cơ sở dữ liệu
+     * @return Danh sách tất cả ngân sách
+     */
     public List<BudgetModel> getAllBudgets() {
         List<BudgetModel> budgets = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -56,13 +84,10 @@ public class BudgetRepository {
             int money = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_BUDGET_MONEY));
             String description = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_BUDGET_DESCRIPTION));
             int status = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_BUDGET_STATUS));
-
-            // SỬA 1: Đọc thêm 2 cột còn lại từ database
             String createdAt = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_CREATED_AT));
             String updatedAt = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_UPDATED_AT));
             int userId = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_BUDGET_USER_ID));
 
-            // FIX 2: Call new constructor with all 8 parameters in correct order.
             budgets.add(new BudgetModel(id, name, money, description, status, createdAt, updatedAt, userId));
         }
         cursor.close();
@@ -70,7 +95,11 @@ public class BudgetRepository {
         return budgets;
     }
     
-    // Add method to get budgets by userId
+    /**
+     * Phương thức lấy danh sách ngân sách theo ID người dùng
+     * @param userId ID của người dùng
+     * @return Danh sách ngân sách của người dùng
+     */
     public List<BudgetModel> getBudgetsByUserId(int userId) {
         List<BudgetModel> budgets = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -94,7 +123,11 @@ public class BudgetRepository {
         return budgets;
     }
 
-
+    /**
+     * Phương thức xóa ngân sách theo ID
+     * @param id ID của ngân sách cần xóa
+     * @return Số dòng bị ảnh hưởng
+     */
     public int deleteBudget(int id) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int rows = db.delete(DbHelper.TABLE_BUDGET, DbHelper.COL_BUDGET_ID + " =?", new String[]{String.valueOf(id)});
@@ -102,6 +135,14 @@ public class BudgetRepository {
         return rows;
     }
 
+    /**
+     * Phương thức cập nhật thông tin ngân sách
+     * @param budgetId ID của ngân sách cần cập nhật
+     * @param name Tên mới
+     * @param money Số tiền mới
+     * @param description Mô tả mới
+     * @return Số dòng bị ảnh hưởng
+     */
     public int updateBudget(int budgetId, String name, int money, String description) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -113,7 +154,8 @@ public class BudgetRepository {
     }
 
     /**
-     * This function calculates the total amount of all budgets.
+     * Phương thức tính tổng số tiền của tất cả ngân sách
+     * @return Tổng số tiền ngân sách
      */
     public int getTotalBudgetAmount() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -128,7 +170,12 @@ public class BudgetRepository {
         db.close();
         return total;
     }
-    // This function gets the budget amount by ID
+    
+    /**
+     * Phương thức lấy số tiền ngân sách theo ID
+     * @param budgetId ID của ngân sách
+     * @return Số tiền ngân sách
+     */
     public int getBudgetAmountById(int budgetId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         int amount = 0;
@@ -141,7 +188,11 @@ public class BudgetRepository {
         return amount;
     }
 
-    // This function gets budget by ID
+    /**
+     * Phương thức lấy thông tin ngân sách theo ID
+     * @param budgetId ID của ngân sách
+     * @return BudgetModel chứa thông tin ngân sách, null nếu không tìm thấy
+     */
     public BudgetModel getBudgetById(int budgetId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         BudgetModel budget = null;

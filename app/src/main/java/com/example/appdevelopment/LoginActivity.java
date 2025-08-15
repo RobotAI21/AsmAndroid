@@ -23,33 +23,53 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * Activity đăng nhập chính của ứng dụng
+ * Xử lý việc xác thực người dùng và chuyển hướng đến màn hình chính
+ */
 public class LoginActivity extends AppCompatActivity {
+    // Khai báo các thành phần UI
     TextView tvRegister, tvForgotPassword;
     EditText edtUsername, edtPassword;
     Button btnLogin;
     UserRepository repository;
 
+    /**
+     * Phương thức khởi tạo Activity
+     * Thiết lập giao diện, animation và xử lý các sự kiện đăng nhập
+     * @param savedInstanceState Bundle chứa trạng thái trước đó của Activity
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        
+        // Khởi tạo repository để thao tác với cơ sở dữ liệu người dùng
         repository = new UserRepository(LoginActivity.this);
 
+        // Tải các animation cho giao diện
         Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
 
+        // Khởi tạo các thành phần UI
         tvRegister = findViewById(R.id.tvRegister);
         edtUsername = findViewById(R.id.edtUsername);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        
+        // Xử lý sự kiện quên mật khẩu
         tvForgotPassword.setOnClickListener(v -> showForgotPasswordDialog());
 
+        // Áp dụng animation cho các thành phần
         findViewById(R.id.tvRegister).startAnimation(fadeIn);
         findViewById(R.id.edtUsername).startAnimation(slideUp);
         findViewById(R.id.edtPassword).startAnimation(slideUp);
-        checkLoginWithDb();//xu ly dang nhap
+        
+        // Thiết lập xử lý đăng nhập
+        checkLoginWithDb();
 
+        // Xử lý sự kiện chuyển đến trang đăng ký
         tvRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,12 +78,20 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+    
+    /**
+     * Phương thức xử lý đăng nhập với cơ sở dữ liệu
+     * Kiểm tra thông tin đăng nhập và lưu trữ session
+     */
     private void checkLoginWithDb(){
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Lấy thông tin đăng nhập từ form
                 String username = edtUsername.getText().toString().trim();
                 String password = edtPassword.getText().toString().trim();
+                
+                // Kiểm tra tính hợp lệ của dữ liệu nhập
                 if (TextUtils.isEmpty(username)){
                     edtUsername.setError("Enter Username, PLEASE!!!!!");
                     return;
@@ -72,20 +100,23 @@ public class LoginActivity extends AppCompatActivity {
                     edtPassword.setError("Enter Password, PLEASE!!!!!");
                     return;
                 }
-                //check account in db
+                
+                // Kiểm tra tài khoản trong cơ sở dữ liệu
                 UserModel infoAccount = repository.getInfoAccountByUsername(username ,password);
                 assert infoAccount != null;
+                
+                // Xử lý kết quả đăng nhập
                 if(infoAccount.getUsername() != null && infoAccount.getId()>0){
+                    // Lưu thông tin người dùng vào SharedPreferences
                     SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putInt("userId", infoAccount.getId());
                     editor.putString("username", infoAccount.getUsername());
                     editor.putString("email", infoAccount.getEmail());
-                    editor.putString("created_at", infoAccount.getCreatedAt()); // đảm bảo có getCreatedAt()
+                    editor.putString("created_at", infoAccount.getCreatedAt());
                     editor.apply();
 
-
-                    //login successfully
+                    // Chuyển hướng đến màn hình chính khi đăng nhập thành công
                     Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putInt("ID_ACCOUNT", infoAccount.getId());
@@ -94,23 +125,30 @@ public class LoginActivity extends AppCompatActivity {
                     bundle.putInt("ROLE_ACCOUNT", infoAccount.getRole());
                     intent.putExtras(bundle);
                     startActivity(intent);
-                    finish(); //ko back lai trang login
+                    finish(); // Không cho phép quay lại trang đăng nhập
                 }else {
-                    //login fail
+                    // Hiển thị thông báo đăng nhập thất bại
                     Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
     }
+    
+    /**
+     * Phương thức hiển thị dialog quên mật khẩu
+     * Cho phép người dùng đặt lại mật khẩu thông qua username và số điện thoại
+     */
     private void showForgotPasswordDialog() {
+        // Tạo view cho dialog
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_forgot_password, null);
 
+        // Khởi tạo các thành phần trong dialog
         EditText edtUsername = dialogView.findViewById(R.id.edtUsernameForgot);
         EditText edtPhone = dialogView.findViewById(R.id.edtPhone);
         EditText edtNewPassword = dialogView.findViewById(R.id.edtNewPassword);
         EditText edtConfirmPassword = dialogView.findViewById(R.id.edtConfirmPassword);
 
+        // Tạo AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Forgot Password")
                 .setView(dialogView)
@@ -118,26 +156,32 @@ public class LoginActivity extends AppCompatActivity {
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = builder.create();
+        
+        // Xử lý sự kiện khi nhấn nút Submit
         dialog.setOnShowListener(d -> {
             Button btnSubmit = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             btnSubmit.setOnClickListener(view -> {
+                // Lấy thông tin từ form
                 String username = edtUsername.getText().toString().trim();
                 String phone = edtPhone.getText().toString().trim();
                 String newPassword = edtNewPassword.getText().toString().trim();
                 String confirmPassword = edtConfirmPassword.getText().toString().trim();
 
+                // Kiểm tra tính hợp lệ của dữ liệu
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(phone)
                         || TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(confirmPassword)) {
                     Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
+                // Kiểm tra và cập nhật mật khẩu
                 UserModel user = repository.getUserByUsernameAndPhone(username, phone);
                 if (user != null && user.getId() > 0) {
                     boolean updated = repository.updatePassword(user.getId(), newPassword);
                     if (updated) {
                         Toast.makeText(this, "Password changed successfully!", Toast.LENGTH_SHORT).show();
 
+                        // Lưu thông tin người dùng vào SharedPreferences
                         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putInt("userId", user.getId());
@@ -146,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putString("created_at", user.getCreatedAt());
                         editor.apply();
 
-
+                        // Chuyển hướng đến màn hình chính
                         Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -161,5 +205,4 @@ public class LoginActivity extends AppCompatActivity {
         });
         dialog.show();
     }
-
 }

@@ -17,15 +17,27 @@ import androidx.core.content.ContextCompat;
 import com.example.appdevelopment.MainMenuActivity;
 import com.example.appdevelopment.R;
 
+/**
+ * Utility class để quản lý thông báo trong ứng dụng
+ * Xử lý các thông báo cảnh báo ngân sách và vượt quá ngân sách
+ */
 public class Notification {
     private static final String CHANNEL_ID = "budget_alerts";
 
-    // Gửi thông báo cảnh báo hoặc vượt ngân sách
+    /**
+     * Phương thức gửi thông báo cảnh báo hoặc vượt ngân sách
+     * @param context Context của ứng dụng
+     * @param title Tiêu đề thông báo
+     * @param message Nội dung thông báo
+     * @param notificationId ID của thông báo
+     */
     private static void showNotification(Context context, String title, String message, int notificationId) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        // Hủy thông báo cũ nếu có
         notificationManager.cancel(notificationId);
 
+        // Tạo notification channel cho Android 8.0 trở lên
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
@@ -37,14 +49,17 @@ public class Notification {
                 notificationManager.createNotificationChannel(channel);
             }
         }
+        
+        // Tạo Intent để mở MainMenuActivity khi nhấn vào thông báo
         Intent intent = new Intent(context, MainMenuActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-                context, notificationId /* Dùng ID làm request code để mỗi pending intent là duy nhất */,
+                context, notificationId,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
+        // Tạo notification builder
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(title)
@@ -56,6 +71,7 @@ public class Notification {
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
+        // Kiểm tra quyền gửi thông báo cho Android 13 trở lên
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -63,12 +79,19 @@ public class Notification {
             }
         }
 
+        // Gửi thông báo
         notificationManager.notify(notificationId, builder.build());
     }
 
-    // Cảnh báo khi còn ít ngân sách
+    /**
+     * Phương thức gửi thông báo cảnh báo khi còn ít ngân sách
+     * @param context Context của ứng dụng
+     * @param budgetName Tên ngân sách
+     * @param remainingAmount Số tiền còn lại
+     */
     public static void showBudgetWarning(Context context, String budgetName, int remainingAmount) {
         String notifyKey = "warning_" + budgetName;
+        // Kiểm tra xem đã gửi thông báo cho ngân sách này chưa
         if (hasNotified(context, notifyKey)) return;
 
         String title = "Budget Warning!";
@@ -77,9 +100,16 @@ public class Notification {
         markAsNotified(context, notifyKey);
     }
 
-    // Cảnh báo khi vượt ngân sách
+    /**
+     * Phương thức gửi thông báo khi vượt quá ngân sách
+     * @param context Context của ứng dụng
+     * @param budgetName Tên ngân sách
+     * @param spentAmount Số tiền đã chi tiêu
+     * @param budgetLimit Giới hạn ngân sách
+     */
     public static void showBudgetExceeded(Context context, String budgetName, int spentAmount, int budgetLimit) {
         String notifyKey = "exceeded_" + budgetName;
+        // Kiểm tra xem đã gửi thông báo cho ngân sách này chưa
         if (hasNotified(context, notifyKey)) return;
 
         String title = "Expense Exceeded!";
@@ -89,7 +119,12 @@ public class Notification {
         markAsNotified(context, notifyKey);
     }
 
-
+    /**
+     * Phương thức reset thông báo cho một ngân sách
+     * Xóa trạng thái đã thông báo để có thể gửi lại
+     * @param context Context của ứng dụng
+     * @param budgetName Tên ngân sách
+     */
     public static void resetBudgetNotifications(Context context, String budgetName) {
         SharedPreferences prefs = context.getSharedPreferences("BudgetNotifications", Context.MODE_PRIVATE);
         prefs.edit()
@@ -98,11 +133,22 @@ public class Notification {
                 .apply();
     }
 
+    /**
+     * Phương thức kiểm tra xem đã gửi thông báo cho key này chưa
+     * @param context Context của ứng dụng
+     * @param key Key để kiểm tra
+     * @return true nếu đã thông báo, false nếu chưa
+     */
     private static boolean hasNotified(Context context, String key) {
         return context.getSharedPreferences("BudgetNotifications", Context.MODE_PRIVATE)
                 .getBoolean(key, false);
     }
 
+    /**
+     * Phương thức đánh dấu đã gửi thông báo cho key này
+     * @param context Context của ứng dụng
+     * @param key Key để đánh dấu
+     */
     private static void markAsNotified(Context context, String key) {
         context.getSharedPreferences("BudgetNotifications", Context.MODE_PRIVATE)
                 .edit()
@@ -110,6 +156,11 @@ public class Notification {
                 .apply();
     }
 
+    /**
+     * Phương thức định dạng số tiền theo định dạng tiền tệ Việt Nam
+     * @param amount Số tiền cần định dạng
+     * @return Chuỗi đã định dạng
+     */
     private static String formatCurrency(int amount) {
         return String.format("%,d₫", amount);
     }

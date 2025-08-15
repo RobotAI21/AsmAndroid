@@ -17,16 +17,32 @@ import com.example.appdevelopment.R;
 import com.example.appdevelopment.database.BudgetModel;
 import com.example.appdevelopment.database.BudgetRepository;
 
-import java.text.NumberFormat; // SỬA: Thêm để định dạng số
+import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale; // SỬA: Thêm để định dạng số
+import java.util.Locale;
 
+/**
+ * Adapter cho RecyclerView hiển thị danh sách ngân sách
+ * Quản lý việc hiển thị, chỉnh sửa và xóa ngân sách
+ */
 public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetViewHolder> {
+    // Danh sách ngân sách cần hiển thị
     private List<BudgetModel> budgets;
+    
+    /**
+     * Constructor của adapter
+     * @param budgets Danh sách ngân sách
+     */
     public BudgetAdapter(List<BudgetModel> budgets) {
         this.budgets = budgets;
     }
 
+    /**
+     * Phương thức tạo ViewHolder mới
+     * @param parent ViewGroup chứa các item
+     * @param viewType Loại view
+     * @return BudgetViewHolder mới
+     */
     @NonNull
     @Override
     public BudgetAdapter.BudgetViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,24 +50,33 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         return new BudgetViewHolder(view);
     }
 
+    /**
+     * Phương thức gắn dữ liệu vào ViewHolder
+     * @param holder ViewHolder cần gắn dữ liệu
+     * @param position Vị trí của item trong danh sách
+     */
     @Override
     public void onBindViewHolder(@NonNull BudgetAdapter.BudgetViewHolder holder, int position) {
         BudgetModel budget = budgets.get(position);
+        
+        // Hiển thị thông tin ngân sách
         holder.tvName.setText(budget.getNameBudget());
         holder.tvDescription.setText(budget.getDescription());
 
-        // SỬA: Định dạng và hiển thị số tiền còn lại / tổng số tiền
+        // Định dạng và hiển thị số tiền còn lại / tổng số tiền
         NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         String remainingMoneyFormatted = formatter.format(budget.getRemainingMoney());
         String totalMoneyFormatted = formatter.format(budget.getMoneyBudget());
         String moneyText = "Remaining: " + remainingMoneyFormatted + " / " + totalMoneyFormatted;
         holder.tvMoney.setText(moneyText);
 
+        // Xử lý sự kiện chỉnh sửa ngân sách
         holder.btnEdit.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 Context context = v.getContext();
                 Intent intent = new Intent(context, EditBudgetActivity.class);
+                // Truyền thông tin ngân sách qua Intent
                 intent.putExtra("BUDGET_ID", budget.getId());
                 intent.putExtra("BUDGET_NAME", budget.getNameBudget());
                 intent.putExtra("BUDGET_MONEY", budget.getMoneyBudget());
@@ -60,12 +85,14 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
             }
         });
 
+        // Xử lý sự kiện xóa ngân sách
         holder.btnDelete.setOnClickListener(v -> {
             int pos = holder.getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
                 BudgetRepository repository = new BudgetRepository(v.getContext());
                 int rows = repository.deleteBudget(budget.getId());
                 if (rows > 0) {
+                    // Xóa item khỏi danh sách và cập nhật giao diện
                     budgets.remove(pos);
                     notifyItemRemoved(pos);
                     Toast.makeText(v.getContext(), "Delete budget successfully", Toast.LENGTH_SHORT).show();
@@ -76,16 +103,30 @@ public class BudgetAdapter extends RecyclerView.Adapter<BudgetAdapter.BudgetView
         });
     }
 
+    /**
+     * Phương thức trả về số lượng item trong danh sách
+     * @return Số lượng ngân sách
+     */
     @Override
     public int getItemCount() {
         return budgets.size();
     }
 
+    /**
+     * ViewHolder chứa các thành phần UI của mỗi item ngân sách
+     */
     public static class BudgetViewHolder extends RecyclerView.ViewHolder {
+        // Khai báo các thành phần UI
         TextView tvName, tvMoney, tvDescription;
         Button btnEdit, btnDelete;
+        
+        /**
+         * Constructor của ViewHolder
+         * @param itemView View chứa layout của item
+         */
         public BudgetViewHolder(@NonNull View itemView) {
             super(itemView);
+            // Khởi tạo các thành phần UI
             tvName = itemView.findViewById(R.id.tvBudgetName);
             tvMoney = itemView.findViewById(R.id.tvBudgetMoney);
             tvDescription = itemView.findViewById(R.id.tvBudgetDescription);

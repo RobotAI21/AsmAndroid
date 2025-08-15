@@ -17,18 +17,30 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity để test các sự kiện cơ bản trong Android
+ * Demo các loại sự kiện: click, text change, checkbox, radio button
+ */
 public class TestEventActivity extends AppCompatActivity {
+    // Khai báo các thành phần UI
     private EditText edtData;
     private Button btnClick, btnClear;
     private CheckBox cbBlock;
     private TextView tvTitle;
     private RadioGroup radAddress;
     private RadioButton radHN, radSL, radHG;
+    
+    /**
+     * Phương thức khởi tạo Activity
+     * Thiết lập giao diện và xử lý các sự kiện
+     * @param savedInstanceState Bundle chứa trạng thái trước đó của Activity
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_event);
-        // anh xa view
+        
+        // Khởi tạo các thành phần UI
         edtData = findViewById(R.id.edtData);
         btnClick = findViewById(R.id.btnClick);
         btnClear = findViewById(R.id.btnClear);
@@ -39,75 +51,75 @@ public class TestEventActivity extends AppCompatActivity {
         radSL = findViewById(R.id.radSL);
         radHG = findViewById(R.id.radHG);
 
-        //block
+        // Khóa các thành phần UI ban đầu
         edtData.setEnabled(false);
         btnClear.setEnabled(false);
         btnClick.setEnabled(false);
 
-        //su kien addText cho EditText
+        // Xử lý sự kiện thay đổi text cho EditText
         edtData.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                // Được gọi trước khi text thay đổi
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                // Được gọi khi text đang thay đổi
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                String content = s.toString().trim(); //lay noi dung nhap vao text
+                // Được gọi sau khi text đã thay đổi
+                String content = s.toString().trim(); // Lấy nội dung nhập vào text
                 tvTitle.setText(content);
             }
         });
 
-        //bat su kien
-        //su kien Onclick cho button
+        // Xử lý sự kiện click cho nút Clear
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 edtData.setText("");
-
             }
         });
 
+        // Xử lý sự kiện click cho nút Click
         btnClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //lay du lieu nguoi dung nhap vao
+                // Lấy dữ liệu người dùng nhập vào
                 String data = edtData.getText().toString().trim();
                 if (TextUtils.isEmpty(data)) {
                     edtData.setError("Please enter data");
-                    return; // dung chuong trinh
+                    return; // Dừng chương trình
                 }
                 Toast.makeText(TestEventActivity.this, data, Toast.LENGTH_LONG).show();
-                // xu ly nguoi dung chon que
+                
+                // Xử lý người dùng chọn quê
                 int selectedId = radAddress.getCheckedRadioButtonId();
                 RadioButton radioButton = (RadioButton) findViewById(selectedId);
                 String address = radioButton.getText().toString();
                 Toast.makeText(TestEventActivity.this, address, Toast.LENGTH_SHORT).show();
             }
         });
-        //su kien checked cho checkbox
+        
+        // Xử lý sự kiện checked cho checkbox
         cbBlock.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    // Mở khóa các thành phần UI khi checkbox được chọn
                     edtData.setEnabled(true);
                     btnClear.setEnabled(true);
                     btnClick.setEnabled(true);
                 } else {
+                    // Khóa các thành phần UI khi checkbox bỏ chọn
                     edtData.setEnabled(false);
                     btnClear.setEnabled(false);
                     btnClick.setEnabled(false);
                 }
             }
         });
-
-
-
-
     }
 }
